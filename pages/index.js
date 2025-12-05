@@ -1,70 +1,60 @@
 import React, { useEffect } from "react";
-import About from "@/components/About";
-import Social from "@/components/Social";
-import Tokenomics from "@/components/Tokenomics";
-import Hero from "@/components/Hero";
+import { Chart } from "@/components/Chart";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { useSelector } from "react-redux";
-import { fetchDexscreener, fetchDextools, fetchUniswap } from "@/store/data";
-import Store from "@/store/store";
-import HowToBuy from "@/components/HowToBuy";
 
 export default function Index() {
-  // Use useSelector to get the relevant state from Redux
-  const {
-    twitter,
-    telegram,
-    address,
-    dextoolsUrl,
-    uniswapUrl,
-    dexscreenerUrl,
-    pairAddress,
-  } = useSelector((state) => state.data);
+	const { isConnected, address } = useAccount();
+	const { abi } = useSelector((data) => data.data);
 
-  const props = {
-    address,
-    twitter,
-    telegram,
-    dextoolsUrl,
-    uniswapUrl,
-    dexscreenerUrl,
-    pairAddress,
-  };
+	const {
+		data: balance,
+		isPending: isBalanceLoading,
+		error: balanceError,
+	} = useReadContract({
+		query: {
+			enabled: isConnected && !!address,
+		},
+		address: EXAMPLE_TOKEN_ADDRESS,
+		abi: EXAMPLE_TOKEN_ABI,
+		functionName: "balanceOf",
+		args: [address],
+	});
 
-  return (
-    <div className="w-full relative">
-      <Hero {...props} />
-      <About {...props} />
-      <HowToBuy {...props} />
-      <Tokenomics {...props} />
-      <Social {...props} />
-    </div>
-  );
-}
+	const {
+		writeContract,
+		isPending: isTransferPending,
+		data: hash,
+		error: writeError,
+	} = useWriteContract();
 
-export async function getServerSideProps() {
-  const state = Store.getState();
-  const { twitter, telegram, address, pairAddress } = state.data;
+	const handleTransfer = () => {
+		if (!address) return;
 
-  await Store.dispatch(fetchDexscreener(address));
-  await Store.dispatch(fetchDextools(pairAddress));
-  await Store.dispatch(fetchUniswap(address));
+		const recipientAddress = "0x000000000000000000000000000000000000dead";
+		const amountToSend = 100n;
 
-  // After dispatching actions, get the updated state
-  const updatedState = Store.getState().data;
+		writeContract({
+			address: EXAMPLE_TOKEN_ADDRESS,
+			abi: EXAMPLE_TOKEN_ABI,
+			functionName: "transfer",
+			args: [recipientAddress, amountToSend],
+		});
+	};
 
-  const additionalProps = {
-    address,
-    twitter,
-    telegram,
-    dextoolsUrl: updatedState.dextoolsUrl,
-    uniswapUrl: updatedState.uniswapUrl,
-    dexscreenerUrl: updatedState.dexscreenerUrl,
-  };
+	useEffect(() => {
+		if (hash) {
+			console.log("Transaction sent! Hash:", hash);
+		}
+		if (writeError) {
+			console.error("Write Error:", writeError.message);
+		}
+	}, [hash, writeError]);
 
-  return {
-    props: {
-      message: "Welcome to the SSR website!",
-      ...additionalProps,
-    },
-  };
+	return (
+		<div className='w-full relative'>
+			<div className='min-h-screen w-full '></div>
+			<Chart />
+		</div>
+	);
 }
