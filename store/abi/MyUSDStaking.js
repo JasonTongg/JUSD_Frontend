@@ -1,373 +1,385 @@
 export const myusdstaking = [
 	{
-		type: "constructor",
 		inputs: [
 			{
+				internalType: "address",
 				name: "_myUSD",
 				type: "address",
-				internalType: "address",
 			},
 			{
+				internalType: "address",
 				name: "_engine",
 				type: "address",
-				internalType: "address",
 			},
 			{
+				internalType: "address",
 				name: "_rateController",
 				type: "address",
-				internalType: "address",
 			},
 		],
 		stateMutability: "nonpayable",
+		type: "constructor",
 	},
 	{
-		type: "function",
-		name: "engine",
 		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "address",
-				internalType: "contract IMyUSDEngine",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "exchangeRate",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "getBalance",
-		inputs: [
-			{
-				name: "user",
-				type: "address",
-				internalType: "address",
-			},
-		],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "getSharesValue",
-		inputs: [
-			{
-				name: "shares",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "lastUpdateTime",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "myUSD",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "address",
-				internalType: "contract MyUSD",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "owner",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "address",
-				internalType: "address",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "renounceOwnership",
-		inputs: [],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "savingsRate",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "setSavingsRate",
-		inputs: [
-			{
-				name: "newRate",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "stake",
-		inputs: [
-			{
-				name: "amount",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "totalShares",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "transferOwnership",
-		inputs: [
-			{
-				name: "newOwner",
-				type: "address",
-				internalType: "address",
-			},
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "userShares",
-		inputs: [
-			{
-				name: "",
-				type: "address",
-				internalType: "address",
-			},
-		],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "withdraw",
-		inputs: [],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "event",
-		name: "OwnershipTransferred",
-		inputs: [
-			{
-				name: "previousOwner",
-				type: "address",
-				indexed: true,
-				internalType: "address",
-			},
-			{
-				name: "newOwner",
-				type: "address",
-				indexed: true,
-				internalType: "address",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "event",
-		name: "SavingsRateUpdated",
-		inputs: [
-			{
-				name: "newRate",
-				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "event",
-		name: "Staked",
-		inputs: [
-			{
-				name: "user",
-				type: "address",
-				indexed: true,
-				internalType: "address",
-			},
-			{
-				name: "amount",
-				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
-			},
-			{
-				name: "shares",
-				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "event",
-		name: "Withdrawn",
-		inputs: [
-			{
-				name: "user",
-				type: "address",
-				indexed: true,
-				internalType: "address",
-			},
-			{
-				name: "amount",
-				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
-			},
-			{
-				name: "shares",
-				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "error",
 		name: "MyUSD__InsufficientAllowance",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "MyUSD__InsufficientBalance",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
-		name: "OwnableInvalidOwner",
 		inputs: [
 			{
+				internalType: "address",
 				name: "owner",
 				type: "address",
-				internalType: "address",
 			},
 		],
+		name: "OwnableInvalidOwner",
+		type: "error",
 	},
 	{
-		type: "error",
-		name: "OwnableUnauthorizedAccount",
 		inputs: [
 			{
+				internalType: "address",
 				name: "account",
 				type: "address",
-				internalType: "address",
 			},
 		],
+		name: "OwnableUnauthorizedAccount",
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "ReentrancyGuardReentrantCall",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "Staking__EngineNotSet",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "Staking__InsufficientBalance",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "Staking__InvalidAmount",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "Staking__InvalidSavingsRate",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
+		inputs: [],
 		name: "Staking__NotRateController",
-		inputs: [],
+		type: "error",
 	},
 	{
-		type: "error",
-		name: "Staking__TransferFailed",
 		inputs: [],
+		name: "Staking__TransferFailed",
+		type: "error",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "previousOwner",
+				type: "address",
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "newOwner",
+				type: "address",
+			},
+		],
+		name: "OwnershipTransferred",
+		type: "event",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "newRate",
+				type: "uint256",
+			},
+		],
+		name: "SavingsRateUpdated",
+		type: "event",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256",
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "shares",
+				type: "uint256",
+			},
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "totalStake",
+				type: "uint256",
+			},
+		],
+		name: "Staked",
+		type: "event",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256",
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "shares",
+				type: "uint256",
+			},
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "totalStake",
+				type: "uint256",
+			},
+		],
+		name: "Withdrawn",
+		type: "event",
+	},
+	{
+		inputs: [],
+		name: "engine",
+		outputs: [
+			{
+				internalType: "contract IMyUSDEngine",
+				name: "",
+				type: "address",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "exchangeRate",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "user",
+				type: "address",
+			},
+		],
+		name: "getBalance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "shares",
+				type: "uint256",
+			},
+		],
+		name: "getSharesValue",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "lastUpdateTime",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "myUSD",
+		outputs: [
+			{
+				internalType: "contract MyUSD",
+				name: "",
+				type: "address",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "owner",
+		outputs: [
+			{
+				internalType: "address",
+				name: "",
+				type: "address",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "renounceOwnership",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "savingsRate",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "newRate",
+				type: "uint256",
+			},
+		],
+		name: "setSavingsRate",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256",
+			},
+		],
+		name: "stake",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "totalShares",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "newOwner",
+				type: "address",
+			},
+		],
+		name: "transferOwnership",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "",
+				type: "address",
+			},
+		],
+		name: "userShares",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "withdraw",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
 	},
 ];

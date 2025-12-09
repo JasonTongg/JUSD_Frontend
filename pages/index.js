@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Chart } from "@/components/Chart";
+import { SupplyChart } from "@/components/SupplyChart";
+import { RateChart } from "@/components/RateChart";
 import {
 	useAccount,
 	useReadContract,
@@ -650,6 +652,8 @@ export default function Index() {
 				</div>
 			</div>
 			<Chart />
+			<RateChart />
+			<SupplyChart />
 		</div>
 	);
 }

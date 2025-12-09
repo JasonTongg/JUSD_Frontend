@@ -1,303 +1,309 @@
 export const dex = [
 	{
-		type: "constructor",
 		inputs: [
 			{
+				internalType: "address",
 				name: "tokenAddr",
 				type: "address",
-				internalType: "address",
 			},
 		],
 		stateMutability: "nonpayable",
+		type: "constructor",
 	},
 	{
-		type: "function",
-		name: "calculateXInput",
+		anonymous: false,
 		inputs: [
 			{
-				name: "yOutput",
-				type: "uint256",
-				internalType: "uint256",
-			},
-			{
-				name: "xReserves",
-				type: "uint256",
-				internalType: "uint256",
-			},
-			{
-				name: "yReserves",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [
-			{
-				name: "xInput",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "pure",
-	},
-	{
-		type: "function",
-		name: "currentPrice",
-		inputs: [],
-		outputs: [
-			{
-				name: "_currentPrice",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "deposit",
-		inputs: [],
-		outputs: [
-			{
-				name: "tokensDeposited",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "payable",
-	},
-	{
-		type: "function",
-		name: "init",
-		inputs: [
-			{
-				name: "tokens",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "payable",
-	},
-	{
-		type: "function",
-		name: "liquidity",
-		inputs: [
-			{
-				name: "",
-				type: "address",
+				indexed: false,
 				internalType: "address",
-			},
-		],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "price",
-		inputs: [
-			{
-				name: "xInput",
-				type: "uint256",
-				internalType: "uint256",
-			},
-			{
-				name: "xReserves",
-				type: "uint256",
-				internalType: "uint256",
-			},
-			{
-				name: "yReserves",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [
-			{
-				name: "yOutput",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "pure",
-	},
-	{
-		type: "function",
-		name: "swap",
-		inputs: [
-			{
-				name: "inputAmount",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [
-			{
-				name: "outputAmount",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "payable",
-	},
-	{
-		type: "function",
-		name: "totalLiquidity",
-		inputs: [],
-		outputs: [
-			{
-				name: "",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "withdraw",
-		inputs: [
-			{
-				name: "amount",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		outputs: [
-			{
-				name: "ethAmount",
-				type: "uint256",
-				internalType: "uint256",
-			},
-			{
-				name: "tokenAmount",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "event",
-		name: "LiquidityProvided",
-		inputs: [
-			{
 				name: "liquidityProvider",
 				type: "address",
-				indexed: false,
-				internalType: "address",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "liquidityMinted",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "ethInput",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "tokensInput",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 		],
-		anonymous: false,
+		name: "LiquidityProvided",
+		type: "event",
 	},
 	{
-		type: "event",
-		name: "LiquidityRemoved",
+		anonymous: false,
 		inputs: [
 			{
+				indexed: false,
+				internalType: "address",
 				name: "liquidityRemover",
 				type: "address",
-				indexed: false,
-				internalType: "address",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "liquidityWithdrawn",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "tokensOutput",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "ethOutput",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 		],
-		anonymous: false,
+		name: "LiquidityRemoved",
+		type: "event",
 	},
 	{
-		type: "event",
-		name: "PriceUpdated",
+		anonymous: false,
 		inputs: [
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "price",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 		],
-		anonymous: false,
+		name: "PriceUpdated",
+		type: "event",
 	},
 	{
-		type: "event",
-		name: "Swap",
+		anonymous: false,
 		inputs: [
 			{
+				indexed: false,
+				internalType: "address",
 				name: "swapper",
 				type: "address",
-				indexed: false,
-				internalType: "address",
 			},
 			{
+				indexed: false,
+				internalType: "address",
 				name: "inputToken",
 				type: "address",
-				indexed: false,
-				internalType: "address",
 			},
 			{
+				indexed: false,
+				internalType: "uint256",
 				name: "inputAmount",
 				type: "uint256",
-				indexed: false,
-				internalType: "uint256",
 			},
 			{
-				name: "outputToken",
-				type: "address",
 				indexed: false,
 				internalType: "address",
+				name: "outputToken",
+				type: "address",
 			},
 			{
-				name: "outputAmount",
-				type: "uint256",
 				indexed: false,
 				internalType: "uint256",
+				name: "outputAmount",
+				type: "uint256",
+			},
+			{
+				indexed: true,
+				internalType: "uint256",
+				name: "totalSupply",
+				type: "uint256",
 			},
 		],
-		anonymous: false,
+		name: "Swap",
+		type: "event",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "yOutput",
+				type: "uint256",
+			},
+			{
+				internalType: "uint256",
+				name: "xReserves",
+				type: "uint256",
+			},
+			{
+				internalType: "uint256",
+				name: "yReserves",
+				type: "uint256",
+			},
+		],
+		name: "calculateXInput",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "xInput",
+				type: "uint256",
+			},
+		],
+		stateMutability: "pure",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "currentPrice",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "_currentPrice",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "deposit",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "tokensDeposited",
+				type: "uint256",
+			},
+		],
+		stateMutability: "payable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "tokens",
+				type: "uint256",
+			},
+		],
+		name: "init",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "payable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "",
+				type: "address",
+			},
+		],
+		name: "liquidity",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "xInput",
+				type: "uint256",
+			},
+			{
+				internalType: "uint256",
+				name: "xReserves",
+				type: "uint256",
+			},
+			{
+				internalType: "uint256",
+				name: "yReserves",
+				type: "uint256",
+			},
+		],
+		name: "price",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "yOutput",
+				type: "uint256",
+			},
+		],
+		stateMutability: "pure",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "inputAmount",
+				type: "uint256",
+			},
+		],
+		name: "swap",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "outputAmount",
+				type: "uint256",
+			},
+		],
+		stateMutability: "payable",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "totalLiquidity",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256",
+			},
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256",
+			},
+		],
+		name: "withdraw",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "ethAmount",
+				type: "uint256",
+			},
+			{
+				internalType: "uint256",
+				name: "tokenAmount",
+				type: "uint256",
+			},
+		],
+		stateMutability: "nonpayable",
+		type: "function",
 	},
 ];

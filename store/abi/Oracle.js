@@ -1,70 +1,70 @@
 export const oracle = [
 	{
-		type: "constructor",
 		inputs: [
 			{
+				internalType: "address",
 				name: "_dexAddress",
 				type: "address",
-				internalType: "address",
 			},
 			{
+				internalType: "uint256",
 				name: "_defaultPrice",
 				type: "uint256",
-				internalType: "uint256",
 			},
 		],
 		stateMutability: "nonpayable",
+		type: "constructor",
 	},
 	{
-		type: "function",
-		name: "defaultPrice",
 		inputs: [],
+		name: "defaultPrice",
 		outputs: [
 			{
+				internalType: "uint256",
 				name: "",
 				type: "uint256",
-				internalType: "uint256",
 			},
 		],
 		stateMutability: "view",
+		type: "function",
 	},
 	{
-		type: "function",
-		name: "dexAddress",
 		inputs: [],
+		name: "dexAddress",
 		outputs: [
 			{
+				internalType: "contract DEX",
 				name: "",
 				type: "address",
-				internalType: "contract DEX",
 			},
 		],
 		stateMutability: "view",
+		type: "function",
 	},
 	{
-		type: "function",
+		inputs: [],
 		name: "getETHMyUSDPrice",
-		inputs: [],
 		outputs: [
 			{
+				internalType: "uint256",
 				name: "",
 				type: "uint256",
-				internalType: "uint256",
 			},
 		],
 		stateMutability: "view",
+		type: "function",
 	},
 	{
-		type: "function",
-		name: "getETHUSDPrice",
 		inputs: [],
+		name: "getETHUSDPrice",
 		outputs: [
 			{
+				internalType: "uint256",
 				name: "",
 				type: "uint256",
-				internalType: "uint256",
 			},
 		],
 		stateMutability: "view",
+		type: "function",
 	},
 ];
