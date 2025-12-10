@@ -44,6 +44,49 @@ export default function Index() {
 	});
 
 	const {
+		data: readTotalSupply,
+		isPending: readTotalSupplyPending,
+		error: readTotalSupplyError,
+		refetch: refetchTotalSupply,
+	} = useReadContract({
+		query: {
+			enabled: isConnected && !!address,
+		},
+		address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
+		abi: abi.myusd,
+		functionName: "totalSupply",
+	});
+
+	const {
+		data: readTotalShares,
+		isPending: readTotalSharesPending,
+		error: readTotalSharesError,
+		refetch: refetchTotalShares,
+	} = useReadContract({
+		query: {
+			enabled: isConnected && !!address,
+		},
+		address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
+		abi: abi.myusdstaking,
+		functionName: "totalShares",
+	});
+
+	const {
+		data: readTotalSharesValue,
+		isPending: readTotalSharesValuePending,
+		error: readTotalSharesValueError,
+		refetch: refetchTotalSharesValue,
+	} = useReadContract({
+		query: {
+			enabled: isConnected && !!address && readTotalShares,
+		},
+		address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
+		abi: abi.myusdstaking,
+		functionName: "getSharesValue",
+		args: [readTotalShares],
+	});
+
+	const {
 		data: readStackingExchangeRate,
 		isPending: readStackingExchangeRatePending,
 		error: readStackingExchangeRateError,
@@ -455,6 +498,8 @@ export default function Index() {
 		refetchCalculatePositionRatio();
 		refetchJusdBalance();
 		refetchUserDebtShares();
+		refetchTotalShares();
+		refetchTotalSharesValue();
 	};
 
 	const handleWithdraw = async () => {
@@ -479,6 +524,8 @@ export default function Index() {
 		refetchCalculatePositionRatio();
 		refetchJusdBalance();
 		refetchUserDebtShares();
+		refetchTotalShares();
+		refetchTotalSharesValue();
 	};
 
 	useEffect(() => {
@@ -544,6 +591,17 @@ export default function Index() {
 							User Shares:{" "}
 							{readStackingUserShares
 								? Number(formatEther(readStackingUserShares))
+								: 0}
+						</p>
+						<hr className='my-[1rem]'></hr>
+						<p>
+							Total Supply:{" "}
+							{readTotalSupply ? Number(formatEther(readTotalSupply)) : 0}
+						</p>
+						<p>
+							Total Staked:{" "}
+							{readTotalSharesValue
+								? Number(formatEther(readTotalSharesValue))
 								: 0}
 						</p>
 					</div>

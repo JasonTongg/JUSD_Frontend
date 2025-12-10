@@ -19,7 +19,7 @@ const engineAbi = [
 				type: "address",
 			},
 			{
-				indexed: false,
+				indexed: true,
 				internalType: "uint256",
 				name: "amount",
 				type: "uint256",
@@ -27,202 +27,23 @@ const engineAbi = [
 			{
 				indexed: false,
 				internalType: "uint256",
-				name: "shares",
-				type: "uint256",
-			},
-			{
-				indexed: true,
-				internalType: "uint256",
-				name: "totalSupply",
+				name: "price",
 				type: "uint256",
 			},
 		],
-		name: "DebtSharesBurned",
-		type: "event",
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "user",
-				type: "address",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "shares",
-				type: "uint256",
-			},
-			{
-				indexed: true,
-				internalType: "uint256",
-				name: "totalSupply",
-				type: "uint256",
-			},
-		],
-		name: "DebtSharesMinted",
+		name: "CollateralAdded",
 		type: "event",
 	},
 ];
 
-const stackingAbi = [
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "user",
-				type: "address",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "shares",
-				type: "uint256",
-			},
-			{
-				indexed: true,
-				internalType: "uint256",
-				name: "totalStake",
-				type: "uint256",
-			},
-		],
-		name: "Staked",
-		type: "event",
-	},
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "user",
-				type: "address",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "amount",
-				type: "uint256",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "shares",
-				type: "uint256",
-			},
-			{
-				indexed: true,
-				internalType: "uint256",
-				name: "totalStake",
-				type: "uint256",
-			},
-		],
-		name: "Withdrawn",
-		type: "event",
-	},
-];
-
-const swapAbi = [
-	{
-		anonymous: false,
-		inputs: [
-			{
-				indexed: false,
-				internalType: "address",
-				name: "swapper",
-				type: "address",
-			},
-			{
-				indexed: false,
-				internalType: "address",
-				name: "inputToken",
-				type: "address",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "inputAmount",
-				type: "uint256",
-			},
-			{
-				indexed: false,
-				internalType: "address",
-				name: "outputToken",
-				type: "address",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "outputAmount",
-				type: "uint256",
-			},
-			{
-				indexed: true,
-				internalType: "uint256",
-				name: "totalSupply",
-				type: "uint256",
-			},
-		],
-		name: "Swap",
-		type: "event",
-	},
-];
-
-const DEBTSHARESMINTED_TOPIC = keccak256(
-	toHex(
-		"DebtSharesMinted(address indexed user, uint256 amount, uint256 shares, uint256 indexed totalSupply)"
-	)
-);
-const DEBTSHARESBURNED_TOPIC = keccak256(
-	toHex(
-		"DebtSharesBurned(address indexed user, uint256 amount, uint256 shares, uint256 indexed totalSupply)"
-	)
-);
-const STACKED_TOPIC = keccak256(
-	toHex(
-		"Staked(address indexed user, uint256 amount, uint256 shares, uint256 indexed totalStake)"
-	)
-);
-const WITHDRAW_TOPIC = keccak256(
-	toHex(
-		"Withdrawn(address indexed user, uint256 amount, uint256 shares, uint256 indexed totalStake)"
-	)
-);
-const SWAP_TOPIC = keccak256(
-	toHex(`Swap(
-        address swapper,
-        address inputToken,
-        uint256 inputAmount,
-        address outputToken,
-        uint256 outputAmount,
-        uint256 indexed totalSupply
-    )`)
+const ADDCOLLATERAL_TOPIC = keccak256(
+	toHex("CollateralAdded(address,uint256,uint256)")
 );
 
 export function SupplyChart() {
 	const { abi } = useSelector((data) => data.data);
 	const client = usePublicClient();
-	const [minted, setMinted] = useState([]);
-	const [burned, setBurned] = useState([]);
-	const [staked, setStaked] = useState([]);
-	const [withdrawn, setWithdrawn] = useState([]);
-	const [swap, setSwap] = useState([]);
+	const [addCollateral, setAddCollateral] = useState([]);
 	const { isConnected, address } = useAccount();
 
 	const { data: readEthPrice, refetch: refetchEthPrice } = useReadContract({
@@ -234,252 +55,90 @@ export function SupplyChart() {
 		functionName: "getETHMyUSDPrice",
 	});
 
-	const { data: readTotalSupply, refetch: refetchTotalSupply } =
-		useReadContract({
-			query: {
-				enabled: isConnected && !!address,
-			},
-			address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
-			abi: abi.myusd,
-			functionName: "totalSupply",
-		});
-
-	useEffect(() => {
-		if (!readTotalSupply) return;
-
-		console.log("readTotalSupply");
-		console.log(formatEther(BigInt(readTotalSupply)));
-	}, [readTotalSupply]);
-
 	useEffect(() => {
 		async function load() {
 			const logs = await client.getLogs({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: engineAbi,
-				eventName: "DebtSharesMinted",
-				topics: [DEBTSHARESMINTED_TOPIC],
+				eventName: "CollateralAdded",
+				// topics: [ADDCOLLATERAL_TOPIC],
 				fromBlock: 0n,
 			});
-			setMinted(logs);
-
-			const logs2 = await client.getLogs({
-				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
-				abi: engineAbi,
-				eventName: "DebtSharesBurned",
-				topics: [DEBTSHARESBURNED_TOPIC],
-				fromBlock: 0n,
-			});
-			setBurned(logs2);
-
-			const logs3 = await client.getLogs({
-				address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
-				abi: stackingAbi,
-				eventName: "Staked",
-				topics: [STACKED_TOPIC],
-				fromBlock: 0n,
-			});
-			setStaked(logs3);
-
-			const logs4 = await client.getLogs({
-				address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
-				abi: stackingAbi,
-				eventName: "Withdrawn",
-				topics: [WITHDRAW_TOPIC],
-				fromBlock: 0n,
-			});
-			setWithdrawn(logs4);
-
-			const logs5 = await client.getLogs({
-				address: process.env.NEXT_PUBLIC_DEX_ADDRESS,
-				abi: swapAbi,
-				eventName: "Swap",
-				topics: [SWAP_TOPIC],
-				fromBlock: 0n,
-			});
-			setSwap(logs5);
-
-			console.log("Logs");
-			console.log(DEBTSHARESMINTED_TOPIC);
-			console.log(logs);
-			console.log(DEBTSHARESBURNED_TOPIC);
-			console.log(logs2);
-			console.log(STACKED_TOPIC);
-			console.log(logs3);
-			console.log(WITHDRAW_TOPIC);
-			console.log(logs4);
-			console.log(SWAP_TOPIC);
-			console.log(logs5);
+			setAddCollateral(logs);
 		}
 		load();
 	}, []);
 
-	const decodeMinted = useMemo(() => {
-		if (!minted.length) return [];
+	const decodeAddCollateral = useMemo(() => {
+		if (!addCollateral.length) return [];
 
-		return minted
+		const data = addCollateral
+			.filter((item) => item.topics.includes(ADDCOLLATERAL_TOPIC))
 			.map((log) => {
-				if (log.data === "0x") return null;
+				try {
+					const decodedLog = decodeEventLog({
+						abi: engineAbi,
+						eventName: "CollateralAdded",
+						topics: log.topics,
+						data: log.data,
+					});
 
-				return {
-					blockNumber: Number(log.blockNumber),
-					value: Number(
-						formatEther(decodeAbiParameters([{ type: "uint256" }], log.data)[0])
-					),
-				};
+					const { user, amount, price } = decodedLog.args;
+
+					const formattedAmount = formatEther(amount);
+
+					return {
+						blockNumber: Number(log.blockNumber),
+						user: user,
+						amount: Number(formattedAmount),
+						price: Number(formatEther(price)),
+					};
+				} catch (error) {
+					console.error("Error decoding log:", log, error);
+					return null;
+				}
 			})
 			.filter(Boolean);
-	}, [minted]);
 
-	const decodedBurned = useMemo(() => {
-		if (!burned.length) return [];
+		console.log("data: ", data);
+		const uniqueLogsMap = new Map();
 
-		return burned
-			.map((log) => {
-				if (log.data === "0x") return null;
+		data.forEach((log) => {
+			const userAddress = log.user;
+			console.log("Each Data: ", log);
 
-				return {
-					blockNumber: Number(log.blockNumber),
-					value: Number(
-						formatEther(decodeAbiParameters([{ type: "uint256" }], log.data)[0])
-					),
-				};
-			})
-			.filter(Boolean);
-	}, [burned]);
-
-	const decodedStacked = useMemo(() => {
-		if (!staked.length) return [];
-
-		return staked
-			.map((log) => {
-				if (log.data === "0x") return null;
-
-				return {
-					blockNumber: Number(log.blockNumber),
-					value: Number(
-						formatEther(decodeAbiParameters([{ type: "uint256" }], log.data)[0])
-					),
-				};
-			})
-			.filter(Boolean);
-	}, [staked]);
-
-	const decodedWithdraw = useMemo(() => {
-		if (!withdrawn.length) return [];
-
-		return withdrawn
-			.map((log) => {
-				if (log.data === "0x") return null;
-
-				return {
-					blockNumber: Number(log.blockNumber),
-					value: Number(
-						formatEther(decodeAbiParameters([{ type: "uint256" }], log.data)[0])
-					),
-				};
-			})
-			.filter(Boolean);
-	}, [withdrawn]);
-
-	const decodedSwap = useMemo(() => {
-		if (!swap.length) return [];
-
-		return swap
-			.map((log) => {
-				if (log.data === "0x") return null;
-
-				return {
-					blockNumber: Number(log.blockNumber),
-					value: Number(
-						formatEther(decodeAbiParameters([{ type: "uint256" }], log.data)[0])
-					),
-				};
-			})
-			.filter(Boolean);
-	}, [swap]);
-
-	const priceData = useMemo(() => {
-		const map = {};
-
-		const addToMap = (arr, key) => {
-			arr.forEach(({ blockNumber, value }) => {
-				if (!map[blockNumber]) map[blockNumber] = { blockNumber };
-				map[blockNumber][key] = value;
-			});
-		};
-
-		addToMap(decodeMinted, "Minted");
-		addToMap(decodedBurned, "Burned");
-		addToMap(decodedStacked, "Stacked");
-		addToMap(decodedWithdraw, "Withdraw");
-		addToMap(decodedSwap, "Swap");
-
-		console.log("Map: ", map);
-
-		let merged = Object.values(map).sort(
-			(a, b) => a.blockNumber - b.blockNumber
-		);
-
-		let lastTotalSupply = 0;
-		let lastTotalStake = 0;
-
-		merged = merged.map((row, i) => {
-			lastTotalSupply = (row.Minted || row.Burned) ?? lastTotalSupply;
-			lastTotalStake = (row.Stacked || row.Withdraw) ?? lastTotalStake;
-
-			return {
-				id: i + 1,
-				blockNumber: row.blockNumber,
-				TotalSupply: lastTotalSupply,
-				TotalStake: lastTotalStake,
-			};
+			if (
+				!uniqueLogsMap.has(userAddress) ||
+				log.blockNumber > uniqueLogsMap.get(userAddress).blockNumber
+			) {
+				// Store or update the map with the newer log for this user
+				uniqueLogsMap.set(userAddress, log);
+			}
 		});
 
-		console.log("Merge: ", merged);
+		console.log("Uniq Log: ", uniqueLogsMap);
 
-		return [
-			{
-				id: 0,
-				blockNumber: 0,
-				TotalSupply: 0,
-				TotalStake: 0,
-			},
-			...merged,
-		];
-	}, [
-		decodeMinted,
-		decodedBurned,
-		decodedStacked,
-		decodedWithdraw,
-		decodedSwap,
-	]);
+		// --- 3. Convert Map values back to an Array and Sort ---
+		const uniqueLogsArray = Array.from(uniqueLogsMap.values());
+
+		// Sort: BlockNumber descending (highest block number / newest first)
+		uniqueLogsArray.sort((a, b) => b.blockNumber - a.blockNumber);
+
+		console.log(
+			"Unique, Decoded, and Sorted Collateral Added Data:",
+			uniqueLogsArray
+		);
+
+		return uniqueLogsArray;
+	}, [addCollateral]);
 
 	return (
-		<>
-			<AreaChart
-				className='h-80 bg-transparent p-4'
-				data={priceData}
-				index='id'
-				categories={["TotalSupply"]}
-				colors={["indigo"]}
-				valueFormatter={dataFormatter}
-				yAxisWidth={90}
-				showAnimation={true}
-				allowDecimals={true}
-				curveType='monotone'
-			/>
-			<AreaChart
-				className='h-80 bg-transparent p-4'
-				data={priceData}
-				index='id'
-				categories={["TotalStake"]}
-				colors={["amber"]}
-				valueFormatter={dataFormatter}
-				yAxisWidth={90}
-				showAnimation={true}
-				allowDecimals={true}
-				curveType='monotone'
-			/>
-		</>
+		<div>
+			{decodeAddCollateral.map((item, index) => (
+				<p key={index}>
+					{item.user} - {item.amount}
+				</p>
+			))}
+		</div>
 	);
 }
