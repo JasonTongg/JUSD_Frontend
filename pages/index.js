@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Chart } from "@/components/Chart";
-import { SupplyChart } from "@/components/SupplyChart";
+import { CollateralHistory } from "@/components/CollateralHistory";
 import { RateChart } from "@/components/RateChart";
 import {
 	useAccount,
@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 
 export default function Index() {
 	const { isConnected, address } = useAccount();
-	const userBalance = useBalance({
+	const { data: userBalance, refetch: refetchEthBalance } = useBalance({
 		address,
 	});
 	const { abi } = useSelector((data) => data.data);
@@ -27,6 +27,7 @@ export default function Index() {
 	const [mintAmount, setMintAmount] = useState(0);
 	const [repayAmount, setRepayAmount] = useState(0);
 	const [stakeAmount, setStakeAmount] = useState(0);
+	const [ratio, setRatio] = useState(0);
 
 	const {
 		data: readJusdBalance,
@@ -55,6 +56,15 @@ export default function Index() {
 		address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
 		abi: abi.myusd,
 		functionName: "totalSupply",
+	});
+
+	const { data: readEthPrice, refetch: refetchEthPrice } = useReadContract({
+		query: {
+			enabled: isConnected && !!address,
+		},
+		address: process.env.NEXT_PUBLIC_ORACLE_ADDRESS,
+		abi: abi.oracle,
+		functionName: "getETHMyUSDPrice",
 	});
 
 	const {
@@ -292,6 +302,7 @@ export default function Index() {
 		}
 
 		refetchBorrowRate();
+		refetchEthBalance();
 	};
 
 	const handleSavingsRate = async () => {
@@ -314,6 +325,7 @@ export default function Index() {
 		}
 
 		refetchSavingsRate();
+		refetchEthBalance();
 	};
 
 	const handleSwap = async (type) => {
@@ -365,6 +377,7 @@ export default function Index() {
 		}
 
 		refetchJusdBalance();
+		refetchEthBalance();
 	};
 
 	const handleAddCollateral = async () => {
@@ -387,6 +400,10 @@ export default function Index() {
 		}
 
 		refetchUserCollateral();
+		refetchCalculatePositionRatio();
+		refetchJusdBalance();
+		refetchUserDebtShares();
+		refetchEthBalance();
 	};
 
 	const handleRemoveCollateral = async () => {
@@ -409,6 +426,10 @@ export default function Index() {
 		}
 
 		refetchUserCollateral();
+		refetchCalculatePositionRatio();
+		refetchJusdBalance();
+		refetchUserDebtShares();
+		refetchEthBalance();
 	};
 
 	const handleMintMyUsd = async () => {
@@ -432,6 +453,7 @@ export default function Index() {
 		refetchCalculatePositionRatio();
 		refetchJusdBalance();
 		refetchUserDebtShares();
+		refetchEthBalance();
 	};
 
 	const handleRepay = async () => {
@@ -464,6 +486,7 @@ export default function Index() {
 		refetchCalculatePositionRatio();
 		refetchJusdBalance();
 		refetchUserDebtShares();
+		refetchEthBalance();
 	};
 
 	const handleStake = async () => {
@@ -500,6 +523,7 @@ export default function Index() {
 		refetchUserDebtShares();
 		refetchTotalShares();
 		refetchTotalSharesValue();
+		refetchEthBalance();
 	};
 
 	const handleWithdraw = async () => {
@@ -526,6 +550,7 @@ export default function Index() {
 		refetchUserDebtShares();
 		refetchTotalShares();
 		refetchTotalSharesValue();
+		refetchEthBalance();
 	};
 
 	useEffect(() => {
@@ -543,14 +568,17 @@ export default function Index() {
 		}
 	}, [borrowRateHash, borrowRateError, savingsRateHash, savingsRateError]);
 
+	useEffect(() => {
+		setRatio(readCalculatePositionRatio);
+	}, [readCalculatePositionRatio]);
+
 	return (
 		<div className='w-full relative'>
 			<div className='w-full mt-20 grid grid-cols-4 gap-4 p-4 [&>*]:border-[1px] [&>*]:border-black [&>*]:p-2'>
 				<div className='w-full'>
 					<div>
 						<p>
-							Eth Balance:{" "}
-							{userBalance.data ? Number(userBalance.data.formatted) : 0}
+							Eth Balance: {userBalance ? Number(userBalance.formatted) : 0}
 						</p>
 						<p>
 							JUSD Balance:{" "}
@@ -658,14 +686,32 @@ export default function Index() {
 						<p>Add Collateral</p>
 						<input
 							type='number'
-							onChange={(e) => setAddCollateralAmount(e.target.value)}
+							onChange={(e) => {
+								setAddCollateralAmount(e.target.value);
+								let userCollateral = Number(formatEther(readUserCollateral));
+								let price = Number(formatEther(readEthPrice));
+								let debt =
+									Number(formatEther(readUserDebtShares)) *
+									Number(formatEther(readDebtExchangerate));
+								userCollateral += Number(e.target.value);
+								setRatio((userCollateral * price) / debt);
+							}}
 							value={addCollateralAmount}
 						></input>
 						<button onClick={handleAddCollateral}>Submit</button>
 						<p>Remove Collateral</p>
 						<input
 							type='number'
-							onChange={(e) => setRemoveCollateralAmount(e.target.value)}
+							onChange={(e) => {
+								setRemoveCollateralAmount(e.target.value);
+								let userCollateral = Number(formatEther(readUserCollateral));
+								let price = Number(formatEther(readEthPrice));
+								let debt =
+									Number(formatEther(readUserDebtShares)) *
+									Number(formatEther(readDebtExchangerate));
+								userCollateral -= Number(e.target.value);
+								setRatio((userCollateral * price) / debt);
+							}}
 							value={removeCollateralAmount}
 						></input>
 						<button onClick={handleRemoveCollateral}>Submit</button>
@@ -675,21 +721,36 @@ export default function Index() {
 					<div>
 						<p>Mint</p>
 						<p>
-							Position Ratio:{" "}
-							{readCalculatePositionRatio
-								? Number(formatEther(readCalculatePositionRatio))
-								: 0}
+							Position Ratio: {ratio ? Number(formatEther(ratio)) || ratio : 0}
 						</p>
 						<input
 							type='number'
-							onChange={(e) => setMintAmount(e.target.value)}
+							onChange={(e) => {
+								setMintAmount(e.target.value);
+								let userCollateral = Number(formatEther(readUserCollateral));
+								let price = Number(formatEther(readEthPrice));
+								let debt =
+									Number(formatEther(readUserDebtShares)) *
+									Number(formatEther(readDebtExchangerate));
+								debt += Number(e.target.value);
+								setRatio((userCollateral * price) / debt);
+							}}
 							value={mintAmount}
 						></input>
 						<button onClick={handleMintMyUsd}>Submit</button>
 						<p>Repay</p>
 						<input
 							type='number'
-							onChange={(e) => setRepayAmount(e.target.value)}
+							onChange={(e) => {
+								setRepayAmount(e.target.value);
+								let userCollateral = Number(formatEther(readUserCollateral));
+								let price = Number(formatEther(readEthPrice));
+								let debt =
+									Number(formatEther(readUserDebtShares)) *
+									Number(formatEther(readDebtExchangerate));
+								debt -= Number(e.target.value);
+								setRatio((userCollateral * price) / debt);
+							}}
 							value={repayAmount}
 						></input>
 						<button onClick={handleRepay}>Submit</button>
@@ -711,7 +772,10 @@ export default function Index() {
 			</div>
 			<Chart />
 			<RateChart />
-			<SupplyChart />
+			<CollateralHistory
+				refetchJusdBalance={refetchJusdBalance}
+				refetchEthBalance={refetchEthBalance}
+			/>
 		</div>
 	);
 }

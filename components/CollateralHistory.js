@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { formatEther } from "viem";
 import { useReadContract, useAccount } from "wagmi";
 import { keccak256, toHex, decodeEventLog } from "viem";
+import { Collateral } from "./Collateral";
 
 const engineAbi = [
 	{
@@ -37,7 +38,7 @@ const ADDCOLLATERAL_TOPIC = keccak256(
 	toHex("CollateralAdded(address,uint256,uint256)")
 );
 
-export function SupplyChart() {
+export function CollateralHistory({ refetchJusdBalance, refetchEthBalance }) {
 	const { abi } = useSelector((data) => data.data);
 	const client = usePublicClient();
 	const [addCollateral, setAddCollateral] = useState([]);
@@ -131,13 +132,22 @@ export function SupplyChart() {
 	return (
 		<div>
 			<h3>Collateral Added History (Latest per User)</h3>
-			{decodeAddCollateral.map((item, index) => (
-				<p key={index}>
-					User: {item.user.slice(0, 6)}...{item.user.slice(-4)} | Amount:{" "}
-					{item.amount.toFixed(4)} | Block:{" "}
-					{item.blockNumber ? item.blockNumber : "Pending"}
-				</p>
-			))}
+			<div className='grid grid-cols-4 gap-4'>
+				{decodeAddCollateral.map((item, index) => (
+					<Collateral
+						key={index}
+						address={item.user}
+						block={item.blockNumber}
+						refetchJusdBalance={refetchJusdBalance}
+						refetchEthBalance={refetchEthBalance}
+					/>
+					// <p >
+					// 	User: {item.user.slice(0, 6)}...{item.user.slice(-4)} | Amount:{" "}
+					// 	{item.amount.toFixed(4)} | Block:{" "}
+					// 	{item.blockNumber ? item.blockNumber : "Pending"}
+					// </p>
+				))}
+			</div>
 		</div>
 	);
 }

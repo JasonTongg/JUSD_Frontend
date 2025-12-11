@@ -6,7 +6,7 @@ import { decodeAbiParameters, formatEther } from "viem";
 import { useReadContract, useAccount } from "wagmi";
 import { keccak256, toHex } from "viem";
 
-const dataFormatter = (number) => `$${number.toFixed(6)}`;
+const dataFormatter = (number) => `$${number.toFixed(8)}`;
 
 const priceUpdatedAbi = [
 	{
@@ -165,6 +165,12 @@ export function Chart() {
 		};
 	}, [priceData]);
 
+	useEffect(() => {
+		console.log(priceData);
+		console.log(yMin);
+		console.log(yMax);
+	}, [priceData]);
+
 	return (
 		<AreaChart
 			className='h-80 bg-transparent p-4'
@@ -173,13 +179,13 @@ export function Chart() {
 			categories={["Price"]}
 			colors={["indigo"]}
 			valueFormatter={dataFormatter}
-			yAxisWidth={90}
+			yAxisWidth={100}
 			showAnimation={true}
 			minValue={yMin}
 			maxValue={yMax}
 			allowDecimals={true}
-			// showGridLines={false}
 			curveType='monotone'
+			autoMinValue={true}
 		/>
 	);
 }
