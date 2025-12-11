@@ -1,12 +1,9 @@
-import { AreaChart } from "@tremor/react";
 import { usePublicClient, useWatchContractEvent } from "wagmi";
 import { useSelector } from "react-redux";
 import { useEffect, useState, useMemo } from "react";
-import { decodeAbiParameters, formatEther } from "viem";
+import { formatEther } from "viem";
 import { useReadContract, useAccount } from "wagmi";
 import { keccak256, toHex, decodeEventLog } from "viem";
-
-const dataFormatter = (number) => `$${number.toFixed(6)}`;
 
 const engineAbi = [
 	{
@@ -46,28 +43,31 @@ export function SupplyChart() {
 	const [addCollateral, setAddCollateral] = useState([]);
 	const { isConnected, address } = useAccount();
 
-	const { data: readEthPrice, refetch: refetchEthPrice } = useReadContract({
-		query: {
-			enabled: isConnected && !!address,
-		},
-		address: process.env.NEXT_PUBLIC_ORACLE_ADDRESS,
-		abi: abi.oracle,
-		functionName: "getETHMyUSDPrice",
-	});
-
 	useEffect(() => {
 		async function load() {
 			const logs = await client.getLogs({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: engineAbi,
 				eventName: "CollateralAdded",
-				// topics: [ADDCOLLATERAL_TOPIC],
 				fromBlock: 0n,
 			});
 			setAddCollateral(logs);
 		}
 		load();
 	}, []);
+
+	useWatchContractEvent({
+		address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
+		abi: engineAbi,
+		eventName: "CollateralAdded",
+		onLogs(logs) {
+			if (logs.length > 0) {
+				console.log("New CollateralAdded logs detected:", logs);
+				setAddCollateral((prevLogs) => [...logs, ...prevLogs]);
+			}
+		},
+		enabled: isConnected && !!address,
+	});
 
 	const decodeAddCollateral = useMemo(() => {
 		if (!addCollateral.length) return [];
@@ -85,12 +85,12 @@ export function SupplyChart() {
 
 					const { user, amount, price } = decodedLog.args;
 
-					const formattedAmount = formatEther(amount);
+					const blockNumber = log.blockNumber ? Number(log.blockNumber) : null;
 
 					return {
-						blockNumber: Number(log.blockNumber),
+						blockNumber: blockNumber,
 						user: user,
-						amount: Number(formattedAmount),
+						amount: Number(formatEther(amount)),
 						price: Number(formatEther(price)),
 					};
 				} catch (error) {
@@ -100,29 +100,25 @@ export function SupplyChart() {
 			})
 			.filter(Boolean);
 
-		console.log("data: ", data);
 		const uniqueLogsMap = new Map();
 
 		data.forEach((log) => {
 			const userAddress = log.user;
-			console.log("Each Data: ", log);
 
-			if (
-				!uniqueLogsMap.has(userAddress) ||
-				log.blockNumber > uniqueLogsMap.get(userAddress).blockNumber
-			) {
-				// Store or update the map with the newer log for this user
+			const currentLogBlockNumber = log.blockNumber || 0;
+			const mapLogBlockNumber =
+				uniqueLogsMap.get(userAddress)?.blockNumber || -1;
+
+			if (currentLogBlockNumber > mapLogBlockNumber) {
 				uniqueLogsMap.set(userAddress, log);
 			}
 		});
 
-		console.log("Uniq Log: ", uniqueLogsMap);
-
-		// --- 3. Convert Map values back to an Array and Sort ---
 		const uniqueLogsArray = Array.from(uniqueLogsMap.values());
 
-		// Sort: BlockNumber descending (highest block number / newest first)
-		uniqueLogsArray.sort((a, b) => b.blockNumber - a.blockNumber);
+		uniqueLogsArray.sort(
+			(a, b) => (b.blockNumber || Infinity) - (a.blockNumber || Infinity)
+		);
 
 		console.log(
 			"Unique, Decoded, and Sorted Collateral Added Data:",
@@ -134,9 +130,12 @@ export function SupplyChart() {
 
 	return (
 		<div>
+			<h3>Collateral Added History (Latest per User)</h3>
 			{decodeAddCollateral.map((item, index) => (
 				<p key={index}>
-					{item.user} - {item.amount}
+					User: {item.user.slice(0, 6)}...{item.user.slice(-4)} | Amount:{" "}
+					{item.amount.toFixed(4)} | Block:{" "}
+					{item.blockNumber ? item.blockNumber : "Pending"}
 				</p>
 			))}
 		</div>
