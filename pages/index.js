@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Chart } from "@/components/Chart";
 import { CollateralHistory } from "@/components/CollateralHistory";
+import { StakeHistory } from "@/components/StakeHistory";
 import { RateChart } from "@/components/RateChart";
 import {
 	useAccount,
@@ -554,21 +555,6 @@ export default function Index() {
 	};
 
 	useEffect(() => {
-		if (borrowRateHash) {
-			console.log("Transaction sent! Hash:", borrowRateHash);
-		}
-		if (borrowRateError) {
-			console.error("Write Error:", borrowRateError.message);
-		}
-		if (savingsRateHash) {
-			console.log("Transaction sent! Hash:", savingsRateHash);
-		}
-		if (savingsRateError) {
-			console.error("Write Error:", savingsRateError.message);
-		}
-	}, [borrowRateHash, borrowRateError, savingsRateHash, savingsRateError]);
-
-	useEffect(() => {
 		setRatio(readCalculatePositionRatio);
 	}, [readCalculatePositionRatio]);
 
@@ -773,6 +759,11 @@ export default function Index() {
 			<Chart />
 			<RateChart />
 			<CollateralHistory
+				refetchJusdBalance={refetchJusdBalance}
+				refetchEthBalance={refetchEthBalance}
+				readCalculatePositionRatio={readCalculatePositionRatio}
+			/>
+			<StakeHistory
 				refetchJusdBalance={refetchJusdBalance}
 				refetchEthBalance={refetchEthBalance}
 			/>

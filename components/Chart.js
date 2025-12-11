@@ -129,7 +129,7 @@ export function Chart() {
 			(a, b) => a.blockNumber - b.blockNumber
 		);
 
-		let lastPrice = 1; // baseline
+		let lastPrice = 1;
 
 		merged = merged.map((row, i) => {
 			lastPrice = row.Price ?? lastPrice;
@@ -163,12 +163,6 @@ export function Chart() {
 			yMin: min - padding,
 			yMax: max + padding,
 		};
-	}, [priceData]);
-
-	useEffect(() => {
-		console.log(priceData);
-		console.log(yMin);
-		console.log(yMax);
 	}, [priceData]);
 
 	return (

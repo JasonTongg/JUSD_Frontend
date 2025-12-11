@@ -6,7 +6,6 @@ import { myusdstaking } from "./abi/MyUSDStaking";
 import { oracle } from "./abi/Oracle";
 import { ratecontroller } from "./abi/RateController";
 
-// Initial state
 const initialState = {
 	address: "0x0000000000000000000000000000000000000000",
 	abi: {
@@ -19,7 +18,6 @@ const initialState = {
 	},
 };
 
-// Create the slice
 const datas = createSlice({
 	name: "Datas",
 	initialState,
@@ -30,5 +28,4 @@ const datas = createSlice({
 	},
 });
 
-// Export the reducer
 export default datas.reducer;

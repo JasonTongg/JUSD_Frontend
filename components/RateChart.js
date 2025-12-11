@@ -155,8 +155,8 @@ export function RateChart() {
 			(a, b) => a.blockNumber - b.blockNumber
 		);
 
-		let lastBorrow = 0; // baseline
-		let lastSavings = 0; // baseline
+		let lastBorrow = 0;
+		let lastSavings = 0;
 
 		merged = merged.map((row, i) => {
 			lastBorrow = row.BorrowRate ?? lastBorrow;

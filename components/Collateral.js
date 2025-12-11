@@ -43,6 +43,8 @@ export function Collateral({
 	block,
 	refetchJusdBalance,
 	refetchEthBalance,
+	positionEventCount,
+	refetchAllPositions,
 }) {
 	const { abi } = useSelector((data) => data.data);
 	const client = usePublicClient();
@@ -153,12 +155,28 @@ export function Collateral({
 		refetchUserCollateral();
 		refetchJusdBalance();
 		refetchEthBalance();
+		refetchAllPositions();
 	};
 
 	useEffect(() => {
 		refetchUserDebt();
 		refetchIsLiquidatable();
 	}, [readCalculatePositionRatio]);
+
+	useEffect(() => {
+		if (positionEventCount > 0) {
+			refetchUserCollateral();
+			refetchUserDebt();
+			refetchIsLiquidatable();
+			refetchCalculatePositionRatio();
+		}
+	}, [
+		positionEventCount,
+		refetchUserCollateral,
+		refetchUserDebt,
+		refetchIsLiquidatable,
+		refetchCalculatePositionRatio,
+	]);
 
 	return (
 		<div className='w-full h-full p-3'>
