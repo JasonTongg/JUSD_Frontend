@@ -6,7 +6,7 @@ import { decodeAbiParameters, formatEther } from "viem";
 import { useReadContract, useAccount } from "wagmi";
 import { keccak256, toHex } from "viem";
 
-const dataFormatter = (number) => `$${number.toFixed(8)}`;
+const dataFormatter = (number) => `$${number.toFixed(10)}`;
 
 const priceUpdatedAbi = [
 	{
@@ -186,6 +186,10 @@ export function Chart() {
 			allowDecimals={true}
 			curveType='monotone'
 			autoMinValue={true}
+			showGridLines={false}
+			showXAxis={false}
+			showYAxis={false}
+			showLegend={false}
 		/>
 	);
 }

@@ -193,6 +193,10 @@ export function RateChart() {
 			showAnimation={true}
 			allowDecimals={true}
 			curveType='monotone'
+			showGridLines={false}
+			showXAxis={false}
+			showYAxis={false}
+			showLegend={false}
 		/>
 	);
 }
