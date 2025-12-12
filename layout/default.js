@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { ToastContainer } from "react-toastify";
 
 export default function Default({ children }) {
@@ -14,11 +13,10 @@ export default function Default({ children }) {
 	if (!isMounted) return null;
 
 	return (
-		<main className='flex flex-col items-center justify-between w-full min-h-screen overflow-x-hidden relative'>
+		<main className='flex flex-col items-center justify-between w-full min-h-screen overflow-x-hidden relative bg-[#f3f4f6b7]'>
 			<Navbar />
 			<ToastContainer />
 			{children}
-			<Footer />
 		</main>
 	);
 }

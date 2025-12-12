@@ -7,7 +7,6 @@ import { oracle } from "./abi/Oracle";
 import { ratecontroller } from "./abi/RateController";
 
 const initialState = {
-	address: "0x0000000000000000000000000000000000000000",
 	abi: {
 		dex,
 		myusd,
@@ -16,16 +15,22 @@ const initialState = {
 		oracle,
 		ratecontroller,
 	},
+	stableBalance: 0,
+	balance: 0,
 };
 
 const datas = createSlice({
 	name: "Datas",
 	initialState,
 	reducers: {
-		setAddress: (state, action) => {
-			state.address = action.payload;
+		setStableBalance: (state, action) => {
+			state.stableBalance = action.payload;
+		},
+		setBalance: (state, action) => {
+			state.balance = action.payload;
 		},
 	},
 });
 
 export default datas.reducer;
+export const { setStableBalance, setBalance } = datas.actions;

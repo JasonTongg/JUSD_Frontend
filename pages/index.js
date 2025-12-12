@@ -9,11 +9,22 @@ import {
 	useWriteContract,
 	useBalance,
 } from "wagmi";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { parseEther, formatEther } from "viem";
 import { toast } from "react-toastify";
+import { setStableBalance, setBalance } from "../store/data";
+import { FaChartLine } from "react-icons/fa6";
+import { FaLock } from "react-icons/fa6";
+import { BiMoney } from "react-icons/bi";
+import { MdSwapHoriz } from "react-icons/md";
+import { FaEthereum } from "react-icons/fa";
+import { FaCoins } from "react-icons/fa6";
+import { FaList } from "react-icons/fa";
+import { FaTrophy } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
 
 export default function Index() {
+	const dispatch = useDispatch();
 	const { isConnected, address } = useAccount();
 	const { data: userBalance, refetch: refetchEthBalance } = useBalance({
 		address,
@@ -29,6 +40,7 @@ export default function Index() {
 	const [repayAmount, setRepayAmount] = useState(0);
 	const [stakeAmount, setStakeAmount] = useState(0);
 	const [ratio, setRatio] = useState(0);
+	const [showRate, setShowRate] = useState(false);
 
 	const {
 		data: readJusdBalance,
@@ -558,9 +570,198 @@ export default function Index() {
 		setRatio(readCalculatePositionRatio);
 	}, [readCalculatePositionRatio]);
 
+	useEffect(() => {
+		if (readJusdBalance === undefined) return;
+
+		const formatted = formatEther(readJusdBalance);
+
+		dispatch(setStableBalance(formatted));
+	}, [readJusdBalance?.toString()]);
+
+	useEffect(() => {
+		if (userBalance === undefined) return;
+
+		dispatch(setBalance(userBalance.formatted.toString()));
+	}, [userBalance?.toString()]);
+
+	function formatNumber(num) {
+		if (num === null || num === undefined) return "0";
+
+		const n = Number(num);
+		const abs = Math.abs(n);
+
+		if (abs >= 1e12) return (n / 1e12).toFixed(2).replace(/\.00$/, "") + "T";
+		if (abs >= 1e9) return (n / 1e9).toFixed(2).replace(/\.00$/, "") + "B";
+		if (abs >= 1e6) return (n / 1e6).toFixed(2).replace(/\.00$/, "") + "M";
+		if (abs >= 1e3) return (n / 1e3).toFixed(2).replace(/\.00$/, "") + "K";
+
+		return n.toFixed(2).toString();
+	}
+
 	return (
-		<div className='w-full relative'>
-			<div className='w-full mt-20 grid grid-cols-4 gap-4 p-4 [&>*]:border-[1px] [&>*]:border-black [&>*]:p-2'>
+		<div className='w-full relative p-4 flex flex-col items-center justify-center gap-4 max-w-7xl'>
+			<div className='p-4 rounded-[100px] fixed bottom-[20px] right-[20px] bg-white border-[0.5px] shadow-md border-gray-200 cursor-pointer hover:scale-110 transition-all'>
+				<IoMdSettings className='text-3xl' />
+			</div>
+			<div className='grid gap-4 mt-20 w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
+				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div>
+						<p className='text-sm text-gray-500'>Total Supply</p>
+						<h1 className='font-bold text-2xl'>
+							{readTotalSupply
+								? formatNumber(Number(formatEther(readTotalSupply)))
+								: 0}{" "}
+							JUSD
+						</h1>
+					</div>
+					<div className='bg-blue-200 p-3 rounded-[10px]'>
+						<FaChartLine className='text-blue-600' />
+					</div>
+				</div>
+				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div>
+						<p className='text-sm text-gray-500'>Total Staked</p>
+						<h1 className='font-bold text-2xl'>
+							{readTotalSharesValue
+								? formatNumber(Number(formatEther(readTotalSharesValue)))
+								: 0}{" "}
+							JUSD
+						</h1>
+					</div>
+					<div className='bg-green-200 p-3 rounded-[10px]'>
+						<FaLock className='text-green-600' />
+					</div>
+				</div>
+				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div>
+						<p className='text-sm text-gray-500'>My Debt</p>
+						<h1 className='font-bold text-2xl'>
+							{readUserDebtShares && readDebtExchangerate
+								? formatNumber(
+										Number(formatEther(readUserDebtShares)) *
+											Number(formatEther(readDebtExchangerate))
+								  )
+								: 0}{" "}
+							JUSD
+						</h1>
+					</div>
+					<div className='bg-orange-200 p-2 rounded-[10px]'>
+						<BiMoney className='text-orange-600 text-2xl' />
+					</div>
+				</div>
+				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div>
+						<p className='text-sm text-gray-500'>My Staked</p>
+						<h1 className='font-bold text-2xl'>
+							{readStackingExchangeRate && readStackingUserShares
+								? formatNumber(
+										Number(formatEther(readStackingExchangeRate)) *
+											Number(formatEther(readStackingUserShares))
+								  )
+								: 0}{" "}
+							JUSD
+						</h1>
+					</div>
+					<div className='bg-purple-200 p-3 rounded-[10px]'>
+						<FaLock className='text-purple-600' />
+					</div>
+				</div>
+			</div>
+			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4 w-full'>
+				<div className='grid-cols-1 sm:grid-cols-2 grid w-full gap-4'>
+					<div className='bg-white w-full min-h-[150px] hover:scale-105 transition-all hover:bg-purple-50 flex flex-col items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+						<div className='bg-purple-200 p-2 rounded-[10px]'>
+							<MdSwapHoriz className='text-purple-600 text-2xl' />
+						</div>
+						<h3 className='font-semibold text-xl'>Swap</h3>
+						<h3 className='flex items-center justify-center gap-1 text-gray-500 text-sm'>
+							Exchange ETH <MdSwapHoriz></MdSwapHoriz> JUSD
+						</h3>
+					</div>
+					<div className='bg-white w-full min-h-[150px] hover:scale-105 transition-all hover:bg-blue-50 flex flex-col items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+						<div className='bg-blue-200 p-2 rounded-[10px]'>
+							<FaEthereum className='text-blue-600 text-2xl' />
+						</div>
+						<h3 className='font-semibold text-xl'>Collateral</h3>
+						<h3 className='flex items-center justify-center gap-1 text-gray-500 text-sm'>
+							Manage ETH Collateral
+						</h3>
+					</div>
+					<div className='bg-white w-full min-h-[150px] flex flex-col hover:scale-105 transition-all hover:bg-green-50 items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+						<div className='bg-green-200 p-3 rounded-[10px]'>
+							<FaCoins className='text-green-600' />
+						</div>
+						<h3 className='font-semibold text-xl'>Mint/Repay</h3>
+						<h3 className='flex items-center justify-center gap-1 text-gray-500 text-sm'>
+							Mint or Repay JUSD
+						</h3>
+					</div>
+					<div className='bg-white w-full min-h-[150px] flex flex-col items-center hover:scale-105 transition-all hover:bg-orange-50 justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+						<div className='bg-orange-200 p-3 rounded-[10px]'>
+							<FaLock className='text-orange-600' />
+						</div>
+						<h3 className='font-semibold text-xl'>Stake/Withdraw</h3>
+						<h3 className='flex items-center justify-center gap-1 text-gray-500 text-sm'>
+							Stake or Withdraw JUSD
+						</h3>
+					</div>
+				</div>
+				<div className='w-full min-h-[400px] bg-white p-4 rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div className='flex items-center justify-between gap-3'>
+						<h2 className='font-bold text-xl'>JUSD Price</h2>
+						{showRate === false ? (
+							<button
+								className='text-blue-600 bg-blue-100 border-[1px] py-1 px-3 rounded-[10px] font-semibold hover:scale-110 transition-all'
+								onClick={() => setShowRate(true)}
+							>
+								Show Rate
+							</button>
+						) : (
+							<button
+								className='text-orange-600 bg-orange-100 border-[1px] py-1 px-3 rounded-[10px] font-semibold hover:scale-110 transition-all'
+								onClick={() => setShowRate(false)}
+							>
+								Show Price
+							</button>
+						)}
+					</div>
+					{showRate ? <RateChart /> : <Chart />}
+				</div>
+			</div>
+			<div className='grid lg:grid-cols-3 gap-4 w-full'>
+				<div className='bg-white w-full min-h-[200px] lg:col-span-2  p-4 rounded-[10px]  border-[0.5px] shadow-md border-gray-200'>
+					<div className='w-full flex items-center justify-start gap-3'>
+						<div className='bg-green-200 p-3 rounded-[10px]'>
+							<FaList className='text-green-600 text-xl' />
+						</div>
+						<div>
+							<p className='font-bold text-2xl'>Positions</p>
+							<h1 className='text-sm text-gray-500'>View all positions</h1>
+						</div>
+					</div>
+					<CollateralHistory
+						refetchJusdBalance={refetchJusdBalance}
+						refetchEthBalance={refetchEthBalance}
+						readCalculatePositionRatio={readCalculatePositionRatio}
+					/>
+				</div>
+				<div className='bg-white w-full min-h-[200px] p-4 rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div className='w-full flex items-center justify-start gap-3'>
+						<div className='bg-purple-200 p-3 rounded-[10px]'>
+							<FaTrophy className='text-purple-600 text-xl' />
+						</div>
+						<div>
+							<p className='font-bold text-2xl'>Leaderboard</p>
+							<h1 className='text-sm text-gray-500'>Top Stakers</h1>
+						</div>
+					</div>
+					<StakeHistory
+						refetchJusdBalance={refetchJusdBalance}
+						refetchEthBalance={refetchEthBalance}
+					/>
+				</div>
+			</div>
+			<div className='w-full grid grid-cols-4 gap-4 [&>*]:border-[1px] [&>*]:border-black [&>*]:p-2'>
 				<div className='w-full'>
 					<div>
 						<p>
@@ -756,17 +957,6 @@ export default function Index() {
 					</div>
 				</div>
 			</div>
-			<Chart />
-			<RateChart />
-			<CollateralHistory
-				refetchJusdBalance={refetchJusdBalance}
-				refetchEthBalance={refetchEthBalance}
-				readCalculatePositionRatio={readCalculatePositionRatio}
-			/>
-			<StakeHistory
-				refetchJusdBalance={refetchJusdBalance}
-				refetchEthBalance={refetchEthBalance}
-			/>
 		</div>
 	);
 }

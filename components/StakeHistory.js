@@ -172,21 +172,38 @@ export function StakeHistory({ refetchJusdBalance, refetchEthBalance }) {
 		return calculatedStakes.map((stake) => stake);
 	}, [readData, uniqueAddresses]);
 
+	function formatNumber(num) {
+		if (num === null || num === undefined) return "0";
+
+		const n = Number(num);
+		const abs = Math.abs(n);
+
+		if (abs >= 1e12) return (n / 1e12).toFixed(2).replace(/\.00$/, "") + "T";
+		if (abs >= 1e9) return (n / 1e9).toFixed(2).replace(/\.00$/, "") + "B";
+		if (abs >= 1e6) return (n / 1e6).toFixed(2).replace(/\.00$/, "") + "M";
+		if (abs >= 1e3) return (n / 1e3).toFixed(2).replace(/\.00$/, "") + "K";
+
+		return n.toFixed(2).toString();
+	}
+
 	return (
-		<div>
-			<h3>Collateral Added History (Sorted by Current Total Value)</h3>
-			<div className='grid grid-cols-4 gap-4'>
-				{isReading && <p>Loading current stake amounts...</p>}
-				{!isReading &&
-					sortedUserAddresses.map((item, index) => (
-						<div className='w-full h-full p-3' key={index}>
-							<p>
-								User: {item.user.slice(0, 6)}...{item.user.slice(-4)}
-							</p>
-							<p>Amount: {item.amount}</p>
-						</div>
-					))}
+		<div className='flex flex-col items-center justify-start w-full max-h-[500px] overflow-auto'>
+			<div className='grid grid-cols-2 w-full justify-center items-center justify-items-center mt-3 [&>*]:text-gray-400'>
+				<p>Address</p>
+				<p>Staked (JUSD)</p>
 			</div>
+			{!isReading &&
+				sortedUserAddresses.map((item, index) => (
+					<div
+						className='grid grid-cols-2 w-full justify-center items-center justify-items-center mt-3'
+						key={index}
+					>
+						<p>
+							{item.user.slice(0, 6)}...{item.user.slice(-4)}
+						</p>
+						<p>{formatNumber(Number(item.amount))}</p>
+					</div>
+				))}
 		</div>
 	);
 }

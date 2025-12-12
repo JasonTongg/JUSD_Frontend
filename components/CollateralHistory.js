@@ -287,12 +287,17 @@ export function CollateralHistory({ refetchJusdBalance, refetchEthBalance }) {
 	const positionEventsLength = positionEvents.length;
 
 	return (
-		<div>
-			<h3>Collateral Positions (Sorted by Liquidation Risk and Debt)</h3>
-			<div className='grid grid-cols-4 gap-4'>
-				{isReading && <p>Loading position data...</p>}
-				{!isReading &&
-					sortedUserAddresses.map((address) => (
+		<div className='flex flex-col items-center justify-start w-full max-h-[500px] overflow-auto'>
+			<div className='hidden sm:grid grid-cols-4 w-full justify-center items-center justify-items-center mt-3 [&>*]:text-gray-400 '>
+				<p>Address</p>
+				<p>Collateral</p>
+				<p>Debt</p>
+				<p>Ratio</p>
+			</div>
+			{!isReading &&
+				sortedUserAddresses
+					.filter((_, index) => index < 30)
+					.map((address) => (
 						<Collateral
 							key={address}
 							address={address}
@@ -302,7 +307,6 @@ export function CollateralHistory({ refetchJusdBalance, refetchEthBalance }) {
 							refetchAllPositions={refetchPositions}
 						/>
 					))}
-			</div>
 		</div>
 	);
 }

@@ -178,20 +178,60 @@ export function Collateral({
 		refetchCalculatePositionRatio,
 	]);
 
+	function formatNumber(num) {
+		if (num === null || num === undefined) return "0";
+
+		const n = Number(num);
+		const abs = Math.abs(n);
+
+		if (abs >= 1e12) return (n / 1e12).toFixed(2).replace(/\.00$/, "") + "T";
+		if (abs >= 1e9) return (n / 1e9).toFixed(2).replace(/\.00$/, "") + "B";
+		if (abs >= 1e6) return (n / 1e6).toFixed(2).replace(/\.00$/, "") + "M";
+		if (abs >= 1e3) return (n / 1e3).toFixed(2).replace(/\.00$/, "") + "K";
+
+		return n.toFixed(2).toString();
+	}
+
 	return (
-		<div className='w-full h-full p-3'>
-			<p>
-				User: {address.slice(0, 6)}...{address.slice(-4)}
+		<div className='grid grid-cols-2 sm:grid-cols-4 w-full justify-center items-center justify-items-center mt-3 sm:gap-0 gap-1'>
+			<p className='text-center'>
+				<span className='font-semibold text-gray-500 sm:hidden inline'>
+					Address:{" "}
+				</span>
+				<span className='font-semibold sm:font-normal'>
+					{address.slice(0, 6)}...{address.slice(-4)}
+				</span>
 			</p>
-			<p>Amount: {readUserCollateral ? formatEther(readUserCollateral) : 0}</p>
-			<p>Debt: {readUserDebt ? Number(formatEther(readUserDebt)) : 0}</p>
-			<p>
-				Ratio:{" "}
-				{readCalculatePositionRatio
-					? Number(formatEther(readCalculatePositionRatio))
-					: 0}
+			<p className='text-center'>
+				<span className='font-semibold text-gray-500 sm:hidden inline'>
+					Collateral:{" "}
+				</span>
+				<span className='font-semibold sm:font-normal'>
+					{readUserCollateral
+						? formatNumber(formatEther(readUserCollateral))
+						: 0}
+				</span>
 			</p>
-			<p>Block: {block ? block : "Pending"}</p>
+			<p className='text-center'>
+				<span className='font-semibold text-gray-500 sm:hidden inline'>
+					Debt:{" "}
+				</span>
+				<span className='font-semibold sm:font-normal'>
+					{readUserDebt ? formatNumber(Number(formatEther(readUserDebt))) : 0}
+				</span>
+			</p>
+			<p className='text-center'>
+				<span className='font-semibold text-gray-500 sm:hidden inline'>
+					Ratio:{" "}
+				</span>
+				<span className='font-semibold sm:font-normal'>
+					{readCalculatePositionRatio
+						? Number(formatEther(readCalculatePositionRatio)) > 99999
+							? "99999+"
+							: formatNumber(Number(formatEther(readCalculatePositionRatio)))
+						: 0}
+				</span>
+			</p>
 			{readIsLiquidatable && (
 				<button onClick={handleLiquidate}>Liquidate</button>
 			)}
