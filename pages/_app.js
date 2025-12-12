@@ -6,7 +6,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import {
 	getDefaultConfig,
 	RainbowKitProvider,
-	darkTheme,
+	lightTheme,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { sepolia } from "wagmi/chains";
@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
 		<Provider store={Store}>
 			<WagmiProvider config={config}>
 				<QueryClientProvider client={queryClient}>
-					<RainbowKitProvider theme={darkTheme()} coolMode={true}>
+					<RainbowKitProvider theme={lightTheme()} coolMode={true}>
 						<Layout>
 							<Component {...pageProps} />
 						</Layout>
