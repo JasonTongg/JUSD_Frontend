@@ -233,15 +233,25 @@ export function Collateral({
 				</span>
 			</p>
 			{readIsLiquidatable ? (
-				<button
-					onClick={handleLiquidate}
-					className='bg-red-200 text-red-600 px-3 py-1 rounded-[10px]'
-				>
-					Liquidate
+				<button>
+					<span className='font-semibold text-gray-500 sm:hidden inline'>
+						Action:{" "}
+					</span>
+					<span
+						onClick={handleLiquidate}
+						className='bg-red-200 text-red-600 px-3 py-1 rounded-[10px]'
+					>
+						Liquidate
+					</span>
 				</button>
 			) : (
-				<div className='bg-gray-200 text-gray-600 px-3 py-1 rounded-[10px]'>
-					No Action
+				<div className=''>
+					<span className='font-semibold text-gray-500 sm:hidden inline'>
+						Action:{" "}
+					</span>
+					<span className='bg-gray-200 text-gray-600 px-3 py-1 rounded-[10px]'>
+						No Action
+					</span>
 				</div>
 			)}
 		</div>

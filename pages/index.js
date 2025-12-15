@@ -641,7 +641,11 @@ export default function Index() {
 		<div className='w-full relative p-4 flex flex-col items-center justify-center gap-4 max-w-[90rem]'>
 			<Modal
 				open={openSetting}
-				onClose={handleCloseSetting}
+				onClose={() => {
+					handleCloseSetting();
+					setNewBorrowRate(0);
+					setNewSavingsRate(0);
+				}}
 				aria-labelledby='modal-modal-title'
 				aria-describedby='modal-modal-description'
 			>
@@ -666,7 +670,10 @@ export default function Index() {
 								value={newBorrowRate}
 							/>
 							<button
-								onClick={handleBorrowRate}
+								onClick={() => {
+									handleBorrowRate();
+									setNewBorrowRate(0);
+								}}
 								className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -689,7 +696,10 @@ export default function Index() {
 								value={newSavingsRate}
 							/>
 							<button
-								onClick={handleSavingsRate}
+								onClick={() => {
+									handleSavingsRate();
+									setNewSavingsRate(0);
+								}}
 								className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -700,7 +710,11 @@ export default function Index() {
 			</Modal>
 			<Modal
 				open={openSwap}
-				onClose={handleCloseSwap}
+				onClose={() => {
+					handleCloseSwap();
+					setInputEth(0);
+					setInputMyUsd(0);
+				}}
 				aria-labelledby='modal-modal-title'
 				aria-describedby='modal-modal-description'
 			>
@@ -725,7 +739,10 @@ export default function Index() {
 								value={inputEth}
 							/>
 							<button
-								onClick={() => handleSwap("ethToToken")}
+								onClick={() => {
+									handleSwap("ethToToken");
+									setInputEth(0);
+								}}
 								className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -748,7 +765,10 @@ export default function Index() {
 								value={inputMyUsd}
 							/>
 							<button
-								onClick={() => handleSwap("tokenToEth")}
+								onClick={() => {
+									handleSwap("tokenToEth");
+									setInputMyUsd(0);
+								}}
 								className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -759,7 +779,12 @@ export default function Index() {
 			</Modal>
 			<Modal
 				open={openCollateral}
-				onClose={handleCloseCollateral}
+				onClose={() => {
+					handleCloseCollateral();
+					refetchCalculatePositionRatio();
+					setAddCollateralAmount(0);
+					setRemoveCollateralAmount(0);
+				}}
 				aria-labelledby='modal-modal-title'
 				aria-describedby='modal-modal-description'
 			>
@@ -779,6 +804,11 @@ export default function Index() {
 								: 0}
 						</p>
 					</div>
+					{ratio < 150 && (
+						<div className='text-red-600 bg-red-200 px-2 py-1 mt-2 rounded-[10px] text-center'>
+							Liquidatable
+						</div>
+					)}
 					<div className='mt-2'>
 						<p className='mb-1'>Add Collateral</p>
 						<div
@@ -804,7 +834,11 @@ export default function Index() {
 								value={addCollateralAmount}
 							/>
 							<button
-								onClick={handleAddCollateral}
+								onClick={() => {
+									handleAddCollateral();
+									refetchCalculatePositionRatio();
+									setAddCollateralAmount(0);
+								}}
 								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -836,8 +870,12 @@ export default function Index() {
 								value={removeCollateralAmount}
 							/>
 							<button
-								onClick={handleRemoveCollateral}
-								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'
+								onClick={() => {
+									handleRemoveCollateral();
+									setRemoveCollateralAmount(0);
+									refetchCalculatePositionRatio();
+								}}
+								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm disabled:opacity-20'
 							>
 								Submit
 							</button>
@@ -847,7 +885,10 @@ export default function Index() {
 			</Modal>
 			<Modal
 				open={openStake}
-				onClose={handleCloseStake}
+				onClose={() => {
+					handleCloseStake();
+					setStakeAmount(0);
+				}}
 				aria-labelledby='modal-modal-title'
 				aria-describedby='modal-modal-description'
 			>
@@ -870,7 +911,10 @@ export default function Index() {
 								value={stakeAmount}
 							/>
 							<button
-								onClick={handleStake}
+								onClick={() => {
+									handleStake();
+									setStakeAmount(0);
+								}}
 								className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -891,11 +935,18 @@ export default function Index() {
 								min={0}
 								disabled
 								value={
-									readJusdBalance ? Number(formatEther(readJusdBalance)) : 0
+									readStackingExchangeRate && readStackingUserShares
+										? formatNumber(
+												Number(formatEther(readStackingExchangeRate)) *
+													Number(formatEther(readStackingUserShares))
+										  )
+										: 0
 								}
 							/>
 							<button
-								onClick={handleWithdraw}
+								onClick={() => {
+									handleWithdraw();
+								}}
 								className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -906,7 +957,12 @@ export default function Index() {
 			</Modal>
 			<Modal
 				open={openMint}
-				onClose={handleCloseMint}
+				onClose={() => {
+					handleCloseMint();
+					setMintAmount(0);
+					refetchCalculatePositionRatio();
+					setRepayAmount(0);
+				}}
 				aria-labelledby='modal-modal-title'
 				aria-describedby='modal-modal-description'
 			>
@@ -926,6 +982,11 @@ export default function Index() {
 								: 0}
 						</p>
 					</div>
+					{ratio < 150 && (
+						<div className='text-red-600 bg-red-200 px-2 py-1 mt-2 rounded-[10px] text-center'>
+							Liquidatable
+						</div>
+					)}
 					<div className='mt-2'>
 						<p className='mb-1'>Mint JUSD</p>
 						<div
@@ -951,8 +1012,12 @@ export default function Index() {
 								value={mintAmount}
 							/>
 							<button
-								onClick={handleMintMyUsd}
-								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'
+								onClick={() => {
+									handleMintMyUsd();
+									setMintAmount(0);
+									refetchCalculatePositionRatio();
+								}}
+								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm disabled:opacity-20'
 							>
 								Submit
 							</button>
@@ -983,7 +1048,11 @@ export default function Index() {
 								value={repayAmount}
 							/>
 							<button
-								onClick={handleRepay}
+								onClick={() => {
+									handleRepay();
+									setRepayAmount(0);
+									refetchCalculatePositionRatio();
+								}}
 								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'
 							>
 								Submit
@@ -1061,10 +1130,33 @@ export default function Index() {
 						<FaLock className='text-purple-600' />
 					</div>
 				</div>
-				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+				<div
+					className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'
+					style={
+						Number(formatEther(readCalculatePositionRatio || 0)) < 150
+							? { border: "1px solid #dc2626" }
+							: {}
+					}
+				>
 					<div>
-						<p className='text-sm text-gray-500'>My Position Ratio</p>
-						<h1 className='font-bold text-2xl'>
+						<p
+							className='text-sm text-gray-500'
+							style={
+								Number(formatEther(readCalculatePositionRatio || 0)) < 150
+									? { color: "#dc2626" }
+									: {}
+							}
+						>
+							My Position Ratio
+						</p>
+						<h1
+							className='font-bold text-2xl'
+							style={
+								Number(formatEther(readCalculatePositionRatio || 0)) < 150
+									? { color: "#dc2626" }
+									: {}
+							}
+						>
 							{readCalculatePositionRatio
 								? (() => {
 										const value = Number(
@@ -1077,6 +1169,9 @@ export default function Index() {
 								  })()
 								: 0}
 						</h1>
+						{Number(formatEther(readCalculatePositionRatio || 0)) < 150 && (
+							<p className='text-red-600 font-bold'>Liquidatable</p>
+						)}
 					</div>
 					<div className='bg-red-200 p-3 rounded-[10px]'>
 						<FaLock className='text-red-600' />
@@ -1171,6 +1266,7 @@ export default function Index() {
 						refetchJusdBalance={refetchJusdBalance}
 						refetchEthBalance={refetchEthBalance}
 						readCalculatePositionRatio={readCalculatePositionRatio}
+						refetchCalculatePositionRatio={refetchCalculatePositionRatio}
 					/>
 				</div>
 				<div className='bg-white w-full min-h-[200px] p-4 rounded-[10px] border-[0.5px] shadow-md border-gray-200'>

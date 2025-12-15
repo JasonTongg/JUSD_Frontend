@@ -137,7 +137,11 @@ const ALL_POSITION_TOPICS = [
 	DEBT_BURNED_TOPIC,
 ];
 
-export function CollateralHistory({ refetchJusdBalance, refetchEthBalance }) {
+export function CollateralHistory({
+	refetchJusdBalance,
+	refetchEthBalance,
+	refetchCalculatePositionRatio,
+}) {
 	const { abi } = useSelector((data) => data.data);
 	const client = usePublicClient();
 	const [positionEvents, setPositionEvents] = useState([]);
@@ -287,7 +291,7 @@ export function CollateralHistory({ refetchJusdBalance, refetchEthBalance }) {
 	const positionEventsLength = positionEvents.length;
 
 	return (
-		<div className='flex flex-col items-center justify-start w-full max-h-[500px] overflow-auto'>
+		<div className='flex flex-col items-center justify-start w-full max-h-[500px] overflow-auto sm:gap-0 gap-4'>
 			<div className='hidden sm:grid grid-cols-5 w-full justify-center items-center justify-items-center mt-3 [&>*]:text-gray-400 '>
 				<p>Address</p>
 				<p>Collateral</p>
@@ -306,6 +310,7 @@ export function CollateralHistory({ refetchJusdBalance, refetchEthBalance }) {
 							refetchEthBalance={refetchEthBalance}
 							positionEventCount={positionEventsLength}
 							refetchAllPositions={refetchPositions}
+							refetchCalculatePositionRatio={refetchCalculatePositionRatio}
 						/>
 					))}
 		</div>
