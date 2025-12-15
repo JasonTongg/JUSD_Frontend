@@ -152,11 +152,13 @@ export function CollateralHistory({
 			const allLogs = [];
 			for (const eventName of ALL_POSITION_EVENTS) {
 				try {
+					const latestBlock = await client.getBlockNumber();
+					const fromBlock = latestBlock > 9_000n ? latestBlock - 9_000n : 0n;
 					const logs = await client.getLogs({
 						address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 						abi: engineAbi,
 						eventName: eventName,
-						fromBlock: 0n,
+						fromBlock,
 					});
 					allLogs.push(...logs);
 				} catch (e) {

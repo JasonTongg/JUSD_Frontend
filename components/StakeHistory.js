@@ -58,11 +58,13 @@ export function StakeHistory({ refetchJusdBalance, refetchEthBalance }) {
 
 	useEffect(() => {
 		async function load() {
+			const latestBlock = await client.getBlockNumber();
+			const fromBlock = latestBlock > 9_000n ? latestBlock - 9_000n : 0n;
 			const logs = await client.getLogs({
 				address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
 				abi: stakeAbi,
 				eventName: "Staked",
-				fromBlock: 0n,
+				fromBlock,
 			});
 			setEvents(logs);
 		}

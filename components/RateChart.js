@@ -95,12 +95,14 @@ export function RateChart() {
 
 	useEffect(() => {
 		async function load() {
+			const latestBlock = await client.getBlockNumber();
+			const fromBlock = latestBlock > 9_000n ? latestBlock - 9_000n : 0n;
 			const logs2 = await client.getLogs({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: borrowRatedAbi,
 				eventName: "BorrowRateUpdated",
 				topics: [BORROW_RATE_TOPIC],
-				fromBlock: 0n,
+				fromBlock,
 			});
 			setBorrowRate(logs2);
 
@@ -109,7 +111,7 @@ export function RateChart() {
 				abi: savingsRateUpdateddAbi,
 				eventName: "SavingsRateUpdated",
 				topics: [SAVINGS_RATE_TOPIC],
-				fromBlock: 0n,
+				fromBlock,
 			});
 			setSavingsRate(logs3);
 		}

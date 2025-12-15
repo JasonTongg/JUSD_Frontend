@@ -793,6 +793,13 @@ export default function Index() {
 					<p className='text-base text-gray-500'>Manage ETH Collateral</p>
 					<div className='text-black bg-blue-200 px-2 py-1 mt-2 rounded-[15px]'>
 						<p className='text-base text-center'>
+							My Collateral: <br></br>{" "}
+							{readUserCollateral ? Number(formatEther(readUserCollateral)) : 0}{" "}
+							ETH
+						</p>
+					</div>
+					<div className='text-black bg-blue-200 px-2 py-1 mt-2 rounded-[15px]'>
+						<p className='text-base text-center'>
 							Position Ratio: <br></br>{" "}
 							{ratio
 								? (() => {
