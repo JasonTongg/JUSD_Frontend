@@ -638,7 +638,7 @@ export default function Index() {
 	}
 
 	return (
-		<div className='w-full relative p-4 flex flex-col items-center justify-center gap-4 max-w-7xl'>
+		<div className='w-full relative p-4 flex flex-col items-center justify-center gap-4 max-w-[90rem]'>
 			<Modal
 				open={openSetting}
 				onClose={handleCloseSetting}
@@ -662,8 +662,13 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => setNewBorrowRate(e.target.value)}
+								value={newBorrowRate}
 							/>
-							<button className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleBorrowRate}
+								className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -680,8 +685,13 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => setNewSavingsRate(e.target.value)}
+								value={newSavingsRate}
 							/>
-							<button className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleSavingsRate}
+								className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -711,8 +721,13 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => setInputEth(e.target.value)}
+								value={inputEth}
 							/>
-							<button className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={() => handleSwap("ethToToken")}
+								className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -729,8 +744,13 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => setInputMyUsd(e.target.value)}
+								value={inputMyUsd}
 							/>
-							<button className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={() => handleSwap("tokenToEth")}
+								className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -746,6 +766,19 @@ export default function Index() {
 				<Box sx={{ ...style, width: "350px", border: "3px solid #bfdbfe" }}>
 					<h1 className='text-2xl font-bold'>Collateral</h1>
 					<p className='text-base text-gray-500'>Manage ETH Collateral</p>
+					<div className='text-black bg-blue-200 px-2 py-1 mt-2 rounded-[15px]'>
+						<p className='text-base text-center'>
+							Position Ratio: <br></br>{" "}
+							{ratio
+								? (() => {
+										const value = Number(formatEther(ratio));
+										if (isNaN(value)) return `${ratio.toFixed(2)}%`;
+										if (value > 99999) return "99999%+";
+										return `${value.toFixed(2)}%`;
+								  })()
+								: 0}
+						</p>
+					</div>
 					<div className='mt-2'>
 						<p className='mb-1'>Add Collateral</p>
 						<div
@@ -758,8 +791,22 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => {
+									setAddCollateralAmount(e.target.value);
+									let userCollateral = Number(formatEther(readUserCollateral));
+									let price = Number(formatEther(readEthPrice));
+									let debt =
+										Number(formatEther(readUserDebtShares)) *
+										Number(formatEther(readDebtExchangerate));
+									userCollateral += Number(e.target.value);
+									setRatio((userCollateral * price) / debt);
+								}}
+								value={addCollateralAmount}
 							/>
-							<button className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleAddCollateral}
+								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -776,8 +823,22 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => {
+									setRemoveCollateralAmount(e.target.value);
+									let userCollateral = Number(formatEther(readUserCollateral));
+									let price = Number(formatEther(readEthPrice));
+									let debt =
+										Number(formatEther(readUserDebtShares)) *
+										Number(formatEther(readDebtExchangerate));
+									userCollateral -= Number(e.target.value);
+									setRatio((userCollateral * price) / debt);
+								}}
+								value={removeCollateralAmount}
 							/>
-							<button className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleRemoveCollateral}
+								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -805,14 +866,19 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => setStakeAmount(e.target.value)}
+								value={stakeAmount}
 							/>
-							<button className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleStake}
+								className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
 					</div>
 					<div className='mt-2'>
-						<p className='mb-1'>Withdraw JUSD</p>
+						<p className='mb-1'>Withdraw All JUSD</p>
 						<div
 							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
 							style={{ gridTemplateColumns: "25px 1fr 70px" }}
@@ -823,8 +889,15 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								disabled
+								value={
+									readJusdBalance ? Number(formatEther(readJusdBalance)) : 0
+								}
 							/>
-							<button className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleWithdraw}
+								className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -840,6 +913,19 @@ export default function Index() {
 				<Box sx={{ ...style, width: "350px", border: "3px solid #bbf7d0" }}>
 					<h1 className='text-2xl font-bold'>Mint/Repay</h1>
 					<p className='text-base text-gray-500'>Mint or Repay JUSD</p>
+					<div className='text-black bg-green-200 px-2 py-1 mt-2 rounded-[15px]'>
+						<p className='text-base text-center'>
+							Position Ratio: <br></br>{" "}
+							{ratio
+								? (() => {
+										const value = Number(formatEther(ratio));
+										if (isNaN(value)) return `${ratio.toFixed(2)}%`;
+										if (value > 99999) return "99999%+";
+										return `${value.toFixed(2)}%`;
+								  })()
+								: 0}
+						</p>
+					</div>
 					<div className='mt-2'>
 						<p className='mb-1'>Mint JUSD</p>
 						<div
@@ -852,8 +938,22 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => {
+									setMintAmount(e.target.value);
+									let userCollateral = Number(formatEther(readUserCollateral));
+									let price = Number(formatEther(readEthPrice));
+									let debt =
+										Number(formatEther(readUserDebtShares)) *
+										Number(formatEther(readDebtExchangerate));
+									debt += Number(e.target.value);
+									setRatio((userCollateral * price) / debt);
+								}}
+								value={mintAmount}
 							/>
-							<button className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleMintMyUsd}
+								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -870,8 +970,22 @@ export default function Index() {
 								type='number'
 								placeholder='0'
 								min={0}
+								onChange={(e) => {
+									setRepayAmount(e.target.value);
+									let userCollateral = Number(formatEther(readUserCollateral));
+									let price = Number(formatEther(readEthPrice));
+									let debt =
+										Number(formatEther(readUserDebtShares)) *
+										Number(formatEther(readDebtExchangerate));
+									debt -= Number(e.target.value);
+									setRatio((userCollateral * price) / debt);
+								}}
+								value={repayAmount}
 							/>
-							<button className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'>
+							<button
+								onClick={handleRepay}
+								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'
+							>
 								Submit
 							</button>
 						</div>
@@ -884,7 +998,7 @@ export default function Index() {
 			>
 				<IoMdSettings className='text-3xl' />
 			</div>
-			<div className='grid gap-4 mt-20 w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
+			<div className='grid gap-4 mt-20 w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-5'>
 				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
 					<div>
 						<p className='text-sm text-gray-500'>Total Supply</p>
@@ -945,6 +1059,27 @@ export default function Index() {
 					</div>
 					<div className='bg-purple-200 p-3 rounded-[10px]'>
 						<FaLock className='text-purple-600' />
+					</div>
+				</div>
+				<div className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'>
+					<div>
+						<p className='text-sm text-gray-500'>My Position Ratio</p>
+						<h1 className='font-bold text-2xl'>
+							{readCalculatePositionRatio
+								? (() => {
+										const value = Number(
+											formatEther(readCalculatePositionRatio)
+										);
+										if (isNaN(value))
+											return `${readCalculatePositionRatio.toFixed(2)}%`;
+										if (value > 99999) return "99999%+";
+										return `${value.toFixed(2)}%`;
+								  })()
+								: 0}
+						</h1>
+					</div>
+					<div className='bg-red-200 p-3 rounded-[10px]'>
+						<FaLock className='text-red-600' />
 					</div>
 				</div>
 			</div>

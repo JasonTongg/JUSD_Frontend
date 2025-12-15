@@ -193,7 +193,7 @@ export function Collateral({
 	}
 
 	return (
-		<div className='grid grid-cols-2 sm:grid-cols-4 w-full justify-center items-center justify-items-center mt-3 sm:gap-0 gap-1'>
+		<div className='grid grid-cols-2 sm:grid-cols-5 w-full justify-center items-center justify-items-center mt-3 sm:gap-0 gap-1'>
 			<p className='text-center'>
 				<span className='font-semibold text-gray-500 sm:hidden inline'>
 					Address:{" "}
@@ -232,8 +232,17 @@ export function Collateral({
 						: 0}
 				</span>
 			</p>
-			{readIsLiquidatable && (
-				<button onClick={handleLiquidate}>Liquidate</button>
+			{readIsLiquidatable ? (
+				<button
+					onClick={handleLiquidate}
+					className='bg-red-200 text-red-600 px-3 py-1 rounded-[10px]'
+				>
+					Liquidate
+				</button>
+			) : (
+				<div className='bg-gray-200 text-gray-600 px-3 py-1 rounded-[10px]'>
+					No Action
+				</div>
 			)}
 		</div>
 	);
