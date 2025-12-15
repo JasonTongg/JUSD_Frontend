@@ -23,10 +23,10 @@ import { FaList } from "react-icons/fa";
 import { FaTrophy } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoMdRemoveCircle } from "react-icons/io";
+import { FaPercentage } from "react-icons/fa";
 
 const style = {
 	position: "absolute",
@@ -1173,8 +1173,8 @@ export default function Index() {
 							<p className='text-red-600 font-bold'>Liquidatable</p>
 						)}
 					</div>
-					<div className='bg-red-200 p-3 rounded-[10px]'>
-						<FaLock className='text-red-600' />
+					<div className='bg-red-200 p-2 rounded-[10px]'>
+						<FaPercentage className='text-red-600 text-2xl' />
 					</div>
 				</div>
 			</div>
@@ -1283,202 +1283,6 @@ export default function Index() {
 						refetchJusdBalance={refetchJusdBalance}
 						refetchEthBalance={refetchEthBalance}
 					/>
-				</div>
-			</div>
-			<div className='w-full grid grid-cols-4 gap-4 [&>*]:border-[1px] [&>*]:border-black [&>*]:p-2'>
-				<div className='w-full'>
-					<div>
-						<p>
-							Eth Balance: {userBalance ? Number(userBalance.formatted) : 0}
-						</p>
-						<p>
-							JUSD Balance:{" "}
-							{readJusdBalance ? Number(formatEther(readJusdBalance)) : 0}
-						</p>
-						<p>
-							User Debt:{" "}
-							{readUserDebtShares && readDebtExchangerate
-								? Number(formatEther(readUserDebtShares)) *
-								  Number(formatEther(readDebtExchangerate))
-								: 0}
-						</p>
-						<p>
-							Debt Shares:{" "}
-							{readUserDebtShares ? Number(formatEther(readUserDebtShares)) : 0}
-						</p>
-						<p>
-							Exchange Debt Rate:{" "}
-							{readDebtExchangerate
-								? Number(formatEther(readDebtExchangerate))
-								: 0}
-						</p>
-						<hr className='my-[1rem]'></hr>
-						<p>
-							User Stacked Amount:{" "}
-							{readStackingExchangeRate && readStackingUserShares
-								? Number(formatEther(readStackingExchangeRate)) *
-								  Number(formatEther(readStackingUserShares))
-								: 0}
-						</p>
-						<p>
-							Exchange Rate:{" "}
-							{readStackingExchangeRate
-								? Number(formatEther(readStackingExchangeRate))
-								: 0}
-						</p>
-						<p>
-							User Shares:{" "}
-							{readStackingUserShares
-								? Number(formatEther(readStackingUserShares))
-								: 0}
-						</p>
-						<hr className='my-[1rem]'></hr>
-						<p>
-							Total Supply:{" "}
-							{readTotalSupply ? Number(formatEther(readTotalSupply)) : 0}
-						</p>
-						<p>
-							Total Staked:{" "}
-							{readTotalSharesValue
-								? Number(formatEther(readTotalSharesValue))
-								: 0}
-						</p>
-					</div>
-				</div>
-				<div className='w-full'>
-					<div>
-						<p>Borrow Rate: {Number(readBorrowRate)}</p>
-						<input
-							type='number'
-							onChange={(e) => setNewBorrowRate(e.target.value)}
-							value={newBorrowRate}
-						></input>
-						<button onClick={handleBorrowRate}>Submit</button>
-					</div>
-				</div>
-				<div className='w-full'>
-					<div>
-						<p>Savings Rate: {Number(readSavingsRate)}</p>
-						<input
-							type='number'
-							onChange={(e) => setNewSavingsRate(e.target.value)}
-							value={newSavingsRate}
-						></input>
-						<button onClick={handleSavingsRate}>Submit</button>
-					</div>
-				</div>
-				<div className='w-full'>
-					<div>
-						<p>Swap, ETH to JUSD</p>
-						<input
-							type='number'
-							onChange={(e) => setInputEth(e.target.value)}
-							value={inputEth}
-						></input>
-						<input
-							type='number'
-							onChange={(e) => setInputMyUsd(e.target.value)}
-							value={inputMyUsd}
-						></input>
-						<button onClick={() => handleSwap("ethToToken")}>
-							Submit ETH to Token
-						</button>
-						<button onClick={() => handleSwap("tokenToEth")}>
-							Submit Token to ETH
-						</button>
-					</div>
-				</div>
-				<div className='w-full'>
-					<div>
-						<p>
-							User Collateral:{" "}
-							{readUserCollateral ? Number(formatEther(readUserCollateral)) : 0}
-						</p>
-						<p>Add Collateral</p>
-						<input
-							type='number'
-							onChange={(e) => {
-								setAddCollateralAmount(e.target.value);
-								let userCollateral = Number(formatEther(readUserCollateral));
-								let price = Number(formatEther(readEthPrice));
-								let debt =
-									Number(formatEther(readUserDebtShares)) *
-									Number(formatEther(readDebtExchangerate));
-								userCollateral += Number(e.target.value);
-								setRatio((userCollateral * price) / debt);
-							}}
-							value={addCollateralAmount}
-						></input>
-						<button onClick={handleAddCollateral}>Submit</button>
-						<p>Remove Collateral</p>
-						<input
-							type='number'
-							onChange={(e) => {
-								setRemoveCollateralAmount(e.target.value);
-								let userCollateral = Number(formatEther(readUserCollateral));
-								let price = Number(formatEther(readEthPrice));
-								let debt =
-									Number(formatEther(readUserDebtShares)) *
-									Number(formatEther(readDebtExchangerate));
-								userCollateral -= Number(e.target.value);
-								setRatio((userCollateral * price) / debt);
-							}}
-							value={removeCollateralAmount}
-						></input>
-						<button onClick={handleRemoveCollateral}>Submit</button>
-					</div>
-				</div>
-				<div className='w-full'>
-					<div>
-						<p>Mint</p>
-						<p>
-							Position Ratio: {ratio ? Number(formatEther(ratio)) || ratio : 0}
-						</p>
-						<input
-							type='number'
-							onChange={(e) => {
-								setMintAmount(e.target.value);
-								let userCollateral = Number(formatEther(readUserCollateral));
-								let price = Number(formatEther(readEthPrice));
-								let debt =
-									Number(formatEther(readUserDebtShares)) *
-									Number(formatEther(readDebtExchangerate));
-								debt += Number(e.target.value);
-								setRatio((userCollateral * price) / debt);
-							}}
-							value={mintAmount}
-						></input>
-						<button onClick={handleMintMyUsd}>Submit</button>
-						<p>Repay</p>
-						<input
-							type='number'
-							onChange={(e) => {
-								setRepayAmount(e.target.value);
-								let userCollateral = Number(formatEther(readUserCollateral));
-								let price = Number(formatEther(readEthPrice));
-								let debt =
-									Number(formatEther(readUserDebtShares)) *
-									Number(formatEther(readDebtExchangerate));
-								debt -= Number(e.target.value);
-								setRatio((userCollateral * price) / debt);
-							}}
-							value={repayAmount}
-						></input>
-						<button onClick={handleRepay}>Submit</button>
-					</div>
-				</div>
-				<div className='w-full'>
-					<div>
-						<p>Stake</p>
-						<input
-							type='number'
-							onChange={(e) => setStakeAmount(e.target.value)}
-							value={stakeAmount}
-						></input>
-						<button onClick={handleStake}>Submit</button>
-						<p>Withdraw</p>
-						<button onClick={handleWithdraw}>Submit</button>
-					</div>
 				</div>
 			</div>
 		</div>

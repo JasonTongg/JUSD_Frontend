@@ -13,7 +13,7 @@ export default function Default({ children }) {
 	if (!isMounted) return null;
 
 	return (
-		<main className='flex flex-col items-center justify-between w-full min-h-screen overflow-x-hidden relative bg-[#f3f4f6b7]'>
+		<main className='flex flex-col items-center justify-start !mt-10 w-full min-h-screen overflow-x-hidden relative bg-[#f3f4f6b7]'>
 			<Navbar />
 			<ToastContainer />
 			{children}
