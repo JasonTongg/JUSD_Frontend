@@ -22,6 +22,25 @@ import { FaCoins } from "react-icons/fa6";
 import { FaList } from "react-icons/fa";
 import { FaTrophy } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import { IoMdAddCircle } from "react-icons/io";
+import { IoMdRemoveCircle } from "react-icons/io";
+
+const style = {
+	position: "absolute",
+	top: "50%",
+	left: "50%",
+	transform: "translate(-50%, -50%)",
+	width: 400,
+	bgcolor: "background.paper",
+	boxShadow: 24,
+	outline: "none",
+	border: "none",
+	borderRadius: "15px",
+	p: 3,
+};
 
 export default function Index() {
 	const dispatch = useDispatch();
@@ -41,6 +60,26 @@ export default function Index() {
 	const [stakeAmount, setStakeAmount] = useState(0);
 	const [ratio, setRatio] = useState(0);
 	const [showRate, setShowRate] = useState(false);
+
+	const [openSwap, setOpenSwap] = React.useState(false);
+	const handleOpenSwap = () => setOpenSwap(true);
+	const handleCloseSwap = () => setOpenSwap(false);
+
+	const [openCollateral, setOpenCollateral] = React.useState(false);
+	const handleOpenCollateral = () => setOpenCollateral(true);
+	const handleCloseCollateral = () => setOpenCollateral(false);
+
+	const [openMint, setOpenMint] = React.useState(false);
+	const handleOpenMint = () => setOpenMint(true);
+	const handleCloseMint = () => setOpenMint(false);
+
+	const [openStake, setOpenStake] = React.useState(false);
+	const handleOpenStake = () => setOpenStake(true);
+	const handleCloseStake = () => setOpenStake(false);
+
+	const [openSetting, setOpenSetting] = React.useState(false);
+	const handleOpenSetting = () => setOpenSetting(true);
+	const handleCloseSetting = () => setOpenSetting(false);
 
 	const {
 		data: readJusdBalance,
@@ -600,7 +639,249 @@ export default function Index() {
 
 	return (
 		<div className='w-full relative p-4 flex flex-col items-center justify-center gap-4 max-w-7xl'>
-			<div className='p-4 rounded-[100px] fixed bottom-[20px] right-[20px] bg-white border-[0.5px] shadow-md border-gray-200 cursor-pointer hover:scale-110 transition-all'>
+			<Modal
+				open={openSetting}
+				onClose={handleCloseSetting}
+				aria-labelledby='modal-modal-title'
+				aria-describedby='modal-modal-description'
+			>
+				<Box sx={{ ...style, width: "350px", border: "3px solid #e5e7eb" }}>
+					<h1 className='text-2xl font-bold'>Setting</h1>
+					<p className='text-base text-gray-500 flex items-center justify-start gap-1'>
+						Update Borrow Rate and Savings Rate
+					</p>
+					<div className='mt-2'>
+						<p className='mb-1'>Borrow Rate</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<MdSwapHoriz className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+					<div className='mt-2'>
+						<p className='mb-1'>Savings Rate</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<MdSwapHoriz className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+				</Box>
+			</Modal>
+			<Modal
+				open={openSwap}
+				onClose={handleCloseSwap}
+				aria-labelledby='modal-modal-title'
+				aria-describedby='modal-modal-description'
+			>
+				<Box sx={{ ...style, width: "350px", border: "3px solid #e9d5ff" }}>
+					<h1 className='text-2xl font-bold'>Swap</h1>
+					<p className='text-base text-gray-500 flex items-center justify-start gap-1'>
+						Exchange ETH <MdSwapHoriz></MdSwapHoriz> JUSD
+					</p>
+					<div className='mt-2'>
+						<p className='mb-1'>ETH to JUSD</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<MdSwapHoriz className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+					<div className='mt-2'>
+						<p className='mb-1'>JUSD to ETH</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<MdSwapHoriz className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+				</Box>
+			</Modal>
+			<Modal
+				open={openCollateral}
+				onClose={handleCloseCollateral}
+				aria-labelledby='modal-modal-title'
+				aria-describedby='modal-modal-description'
+			>
+				<Box sx={{ ...style, width: "350px", border: "3px solid #bfdbfe" }}>
+					<h1 className='text-2xl font-bold'>Collateral</h1>
+					<p className='text-base text-gray-500'>Manage ETH Collateral</p>
+					<div className='mt-2'>
+						<p className='mb-1'>Add Collateral</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<IoMdAddCircle className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+					<div className='mt-2'>
+						<p className='mb-1'>Remove Collateral</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<IoMdRemoveCircle className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+				</Box>
+			</Modal>
+			<Modal
+				open={openStake}
+				onClose={handleCloseStake}
+				aria-labelledby='modal-modal-title'
+				aria-describedby='modal-modal-description'
+			>
+				<Box sx={{ ...style, width: "350px", border: "3px solid #fed7aa" }}>
+					<h1 className='text-2xl font-bold'>Stake/Withdraw</h1>
+					<p className='text-base text-gray-500'>Stake or Withdraw JUSD</p>
+					<div className='mt-2'>
+						<p className='mb-1'>Stake JUSD</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<IoMdAddCircle className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+					<div className='mt-2'>
+						<p className='mb-1'>Withdraw JUSD</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<IoMdRemoveCircle className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+				</Box>
+			</Modal>
+			<Modal
+				open={openMint}
+				onClose={handleCloseMint}
+				aria-labelledby='modal-modal-title'
+				aria-describedby='modal-modal-description'
+			>
+				<Box sx={{ ...style, width: "350px", border: "3px solid #bbf7d0" }}>
+					<h1 className='text-2xl font-bold'>Mint/Repay</h1>
+					<p className='text-base text-gray-500'>Mint or Repay JUSD</p>
+					<div className='mt-2'>
+						<p className='mb-1'>Mint JUSD</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<IoMdAddCircle className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+					<div className='mt-2'>
+						<p className='mb-1'>Repay JUSD</p>
+						<div
+							className='grid items-center justify-start border-[1px] border-gray-300 px-2 rounded-[10px]'
+							style={{ gridTemplateColumns: "25px 1fr 70px" }}
+						>
+							<IoMdRemoveCircle className='text-2xl text-gray-600' />
+							<input
+								className='w-full !border-none !outline-none !outline-[0px] !border-[0px] focus:outline-none focus:ring-0 focus:shadow-none'
+								type='number'
+								placeholder='0'
+								min={0}
+							/>
+							<button className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'>
+								Submit
+							</button>
+						</div>
+					</div>
+				</Box>
+			</Modal>
+			<div
+				onClick={handleOpenSetting}
+				className='p-4 rounded-[100px] fixed bottom-[20px] right-[20px] bg-white border-[0.5px] shadow-md border-gray-200 cursor-pointer hover:scale-110 transition-all'
+			>
 				<IoMdSettings className='text-3xl' />
 			</div>
 			<div className='grid gap-4 mt-20 w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
@@ -669,7 +950,10 @@ export default function Index() {
 			</div>
 			<div className='grid grid-cols-1 lg:grid-cols-2 gap-4 w-full'>
 				<div className='grid-cols-1 sm:grid-cols-2 grid w-full gap-4'>
-					<div className='bg-white w-full min-h-[150px] hover:scale-105 transition-all hover:bg-purple-50 flex flex-col items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+					<div
+						onClick={handleOpenSwap}
+						className='bg-white w-full min-h-[150px] hover:scale-105 transition-all hover:bg-purple-50 flex flex-col items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'
+					>
 						<div className='bg-purple-200 p-2 rounded-[10px]'>
 							<MdSwapHoriz className='text-purple-600 text-2xl' />
 						</div>
@@ -678,7 +962,10 @@ export default function Index() {
 							Exchange ETH <MdSwapHoriz></MdSwapHoriz> JUSD
 						</h3>
 					</div>
-					<div className='bg-white w-full min-h-[150px] hover:scale-105 transition-all hover:bg-blue-50 flex flex-col items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+					<div
+						onClick={handleOpenCollateral}
+						className='bg-white w-full min-h-[150px] hover:scale-105 transition-all hover:bg-blue-50 flex flex-col items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'
+					>
 						<div className='bg-blue-200 p-2 rounded-[10px]'>
 							<FaEthereum className='text-blue-600 text-2xl' />
 						</div>
@@ -687,7 +974,10 @@ export default function Index() {
 							Manage ETH Collateral
 						</h3>
 					</div>
-					<div className='bg-white w-full min-h-[150px] flex flex-col hover:scale-105 transition-all hover:bg-green-50 items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+					<div
+						onClick={handleOpenMint}
+						className='bg-white w-full min-h-[150px] flex flex-col hover:scale-105 transition-all hover:bg-green-50 items-center justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'
+					>
 						<div className='bg-green-200 p-3 rounded-[10px]'>
 							<FaCoins className='text-green-600' />
 						</div>
@@ -696,7 +986,10 @@ export default function Index() {
 							Mint or Repay JUSD
 						</h3>
 					</div>
-					<div className='bg-white w-full min-h-[150px] flex flex-col items-center hover:scale-105 transition-all hover:bg-orange-50 justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'>
+					<div
+						onClick={handleOpenStake}
+						className='bg-white w-full min-h-[150px] flex flex-col items-center hover:scale-105 transition-all hover:bg-orange-50 justify-center gap-2 rounded-[10px] cursor-pointer border-[0.5px] shadow-md border-gray-200'
+					>
 						<div className='bg-orange-200 p-3 rounded-[10px]'>
 							<FaLock className='text-orange-600' />
 						</div>
