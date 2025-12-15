@@ -25,6 +25,10 @@ The application allows users to visually perform key stablecoin operations, incl
 * Viewing and managing individual debt positions.
 * Interacting with the liquidation mechanism.
 
+## Network & Demo Notes:
+- The protocol is currently deployed and running on the Sepolia testnet.
+- The live demo operates with limited liquidity, as it is intended for demonstration and educational purposes rather than production use.
+
 ## Author  
 
 **Jason Tong**  
