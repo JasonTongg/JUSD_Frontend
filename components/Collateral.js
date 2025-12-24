@@ -45,6 +45,8 @@ export function Collateral({
 	refetchEthBalance,
 	positionEventCount,
 	refetchAllPositions,
+	key,
+	refetchAllIndex
 }) {
 	const { abi } = useSelector((data) => data.data);
 	const client = usePublicClient();
@@ -156,6 +158,7 @@ export function Collateral({
 		refetchJusdBalance();
 		refetchEthBalance();
 		refetchAllPositions();
+		refetchAllIndex();
 	};
 
 	useEffect(() => {
@@ -176,6 +179,7 @@ export function Collateral({
 		refetchUserDebt,
 		refetchIsLiquidatable,
 		refetchCalculatePositionRatio,
+		key
 	]);
 
 	function formatNumber(num) {
@@ -226,13 +230,13 @@ export function Collateral({
 				</span>
 				<span className='font-semibold sm:font-normal'>
 					{readCalculatePositionRatio
-						? Number(formatEther(readCalculatePositionRatio)) > 99999
+						? Number(formatEther(readCalculatePositionRatio)) * 100 > 99999
 							? "99999+"
-							: formatNumber(Number(formatEther(readCalculatePositionRatio)))
+							: formatNumber(Number(formatEther(readCalculatePositionRatio)) * 100)
 						: 0}
 				</span>
 			</p>
-			{readIsLiquidatable ? (
+			{readIsLiquidatable && Number(formatEther(readUserDebt)) > 0 ? (
 				<button>
 					<span className='font-semibold text-gray-500 sm:hidden inline'>
 						Action:{" "}

@@ -60,6 +60,7 @@ export default function Index() {
 	const [stakeAmount, setStakeAmount] = useState(0);
 	const [ratio, setRatio] = useState(0);
 	const [showRate, setShowRate] = useState(false);
+	const [key, setKey] = useState(0);
 
 	const [openSwap, setOpenSwap] = React.useState(false);
 	const handleOpenSwap = () => setOpenSwap(true);
@@ -271,6 +272,23 @@ export default function Index() {
 		functionName: "savingsRate",
 	});
 
+	function refetchAllIndex() {
+		refetchSavingsRate();
+		refetchBorrowRate();
+		refetchDebtExchangeRate();
+		refetchUserDebtShares();
+		refetchUserCollateral();
+		refetchCalculatePositionRatio();
+		refetchStackingUserShares();
+		refetchStackingExchangeRate();
+		refetchTotalSharesValue();
+		refetchTotalShares();
+		refetchEthPrice();
+		refetchTotalSupply();
+		refetchJusdBalance();
+		refetchEthBalance();
+	}
+
 	const {
 		writeContractAsync: writeSavingsRate,
 		isPending: savingsRatePending,
@@ -430,6 +448,8 @@ export default function Index() {
 
 		refetchJusdBalance();
 		refetchEthBalance();
+		refetchCalculatePositionRatio();
+		setKey((k) => k + 1);
 	};
 
 	const handleAddCollateral = async () => {
@@ -456,6 +476,7 @@ export default function Index() {
 		refetchJusdBalance();
 		refetchUserDebtShares();
 		refetchEthBalance();
+		setKey((k) => k + 1);
 	};
 
 	const handleRemoveCollateral = async () => {
@@ -482,6 +503,7 @@ export default function Index() {
 		refetchJusdBalance();
 		refetchUserDebtShares();
 		refetchEthBalance();
+		setKey((k) => k + 1);
 	};
 
 	const handleMintMyUsd = async () => {
@@ -506,6 +528,7 @@ export default function Index() {
 		refetchJusdBalance();
 		refetchUserDebtShares();
 		refetchEthBalance();
+		setKey((k) => k + 1);
 	};
 
 	const handleRepay = async () => {
@@ -539,6 +562,7 @@ export default function Index() {
 		refetchJusdBalance();
 		refetchUserDebtShares();
 		refetchEthBalance();
+		setKey((k) => k + 1);
 	};
 
 	const handleStake = async () => {
@@ -576,6 +600,7 @@ export default function Index() {
 		refetchTotalShares();
 		refetchTotalSharesValue();
 		refetchEthBalance();
+		setKey((k) => k + 1);
 	};
 
 	const handleWithdraw = async () => {
@@ -603,6 +628,7 @@ export default function Index() {
 		refetchTotalShares();
 		refetchTotalSharesValue();
 		refetchEthBalance();
+		setKey((k) => k + 1);
 	};
 
 	useEffect(() => {
@@ -803,11 +829,11 @@ export default function Index() {
 							Position Ratio: <br></br>{" "}
 							{ratio
 								? (() => {
-										const value = Number(formatEther(ratio));
-										if (isNaN(value)) return `${ratio.toFixed(2)}%`;
-										if (value > 99999) return "99999%+";
-										return `${value.toFixed(2)}%`;
-								  })()
+									const value = Number(formatEther(ratio)) * 100;
+									if (isNaN(value)) return `${ratio.toFixed(2)}%`;
+									if (value > 99999) return "99999%+";
+									return `${value.toFixed(2)}%`;
+								})()
 								: 0}
 						</p>
 					</div>
@@ -830,13 +856,13 @@ export default function Index() {
 								min={0}
 								onChange={(e) => {
 									setAddCollateralAmount(e.target.value);
-									let userCollateral = Number(formatEther(readUserCollateral));
-									let price = Number(formatEther(readEthPrice));
+									let userCollateral = Number(formatEther(readUserCollateral || 0));
+									let price = Number(formatEther(readEthPrice || 0));
 									let debt =
-										Number(formatEther(readUserDebtShares)) *
-										Number(formatEther(readDebtExchangerate));
+										Number(formatEther(readUserDebtShares || 0)) *
+										Number(formatEther(readDebtExchangerate || 0));
 									userCollateral += Number(e.target.value);
-									setRatio((userCollateral * price) / debt);
+									setRatio((userCollateral * price) / debt * 100);
 								}}
 								value={addCollateralAmount}
 							/>
@@ -872,7 +898,7 @@ export default function Index() {
 										Number(formatEther(readUserDebtShares)) *
 										Number(formatEther(readDebtExchangerate));
 									userCollateral -= Number(e.target.value);
-									setRatio((userCollateral * price) / debt);
+									setRatio((userCollateral * price) / debt * 100);
 								}}
 								value={removeCollateralAmount}
 							/>
@@ -944,9 +970,9 @@ export default function Index() {
 								value={
 									readStackingExchangeRate && readStackingUserShares
 										? formatNumber(
-												Number(formatEther(readStackingExchangeRate)) *
-													Number(formatEther(readStackingUserShares))
-										  )
+											Number(formatEther(readStackingExchangeRate)) *
+											Number(formatEther(readStackingUserShares))
+										)
 										: 0
 								}
 							/>
@@ -981,11 +1007,11 @@ export default function Index() {
 							Position Ratio: <br></br>{" "}
 							{ratio
 								? (() => {
-										const value = Number(formatEther(ratio));
-										if (isNaN(value)) return `${ratio.toFixed(2)}%`;
-										if (value > 99999) return "99999%+";
-										return `${value.toFixed(2)}%`;
-								  })()
+									const value = Number(formatEther(ratio)) * 100;
+									if (isNaN(value)) return `${ratio.toFixed(2)}%`;
+									if (value > 99999) return "99999%+";
+									return `${value.toFixed(2)}%`;
+								})()
 								: 0}
 						</p>
 					</div>
@@ -1014,7 +1040,7 @@ export default function Index() {
 										Number(formatEther(readUserDebtShares)) *
 										Number(formatEther(readDebtExchangerate));
 									debt += Number(e.target.value);
-									setRatio((userCollateral * price) / debt);
+									setRatio((userCollateral * price) / debt * 100);
 								}}
 								value={mintAmount}
 							/>
@@ -1050,7 +1076,7 @@ export default function Index() {
 										Number(formatEther(readUserDebtShares)) *
 										Number(formatEther(readDebtExchangerate));
 									debt -= Number(e.target.value);
-									setRatio((userCollateral * price) / debt);
+									setRatio((userCollateral * price) / debt * 100);
 								}}
 								value={repayAmount}
 							/>
@@ -1109,9 +1135,9 @@ export default function Index() {
 						<h1 className='font-bold text-2xl'>
 							{readUserDebtShares && readDebtExchangerate
 								? formatNumber(
-										Number(formatEther(readUserDebtShares)) *
-											Number(formatEther(readDebtExchangerate))
-								  )
+									Number(formatEther(readUserDebtShares)) *
+									Number(formatEther(readDebtExchangerate))
+								)
 								: 0}{" "}
 							JUSD
 						</h1>
@@ -1126,9 +1152,9 @@ export default function Index() {
 						<h1 className='font-bold text-2xl'>
 							{readStackingExchangeRate && readStackingUserShares
 								? formatNumber(
-										Number(formatEther(readStackingExchangeRate)) *
-											Number(formatEther(readStackingUserShares))
-								  )
+									Number(formatEther(readStackingExchangeRate)) *
+									Number(formatEther(readStackingUserShares))
+								)
 								: 0}{" "}
 							JUSD
 						</h1>
@@ -1140,7 +1166,7 @@ export default function Index() {
 				<div
 					className='flex items-center justify-between gap-4 py-4 px-6 bg-white rounded-[10px] border-[0.5px] shadow-md border-gray-200'
 					style={
-						Number(formatEther(readCalculatePositionRatio || 0)) < 150
+						Number(formatEther(readCalculatePositionRatio || 0)) * 100 < 150
 							? { border: "1px solid #dc2626" }
 							: {}
 					}
@@ -1149,7 +1175,7 @@ export default function Index() {
 						<p
 							className='text-sm text-gray-500'
 							style={
-								Number(formatEther(readCalculatePositionRatio || 0)) < 150
+								Number(formatEther(readCalculatePositionRatio || 0)) * 100 < 150
 									? { color: "#dc2626" }
 									: {}
 							}
@@ -1159,24 +1185,24 @@ export default function Index() {
 						<h1
 							className='font-bold text-2xl'
 							style={
-								Number(formatEther(readCalculatePositionRatio || 0)) < 150
+								Number(formatEther(readCalculatePositionRatio || 0)) * 100 < 150
 									? { color: "#dc2626" }
 									: {}
 							}
 						>
 							{readCalculatePositionRatio
 								? (() => {
-										const value = Number(
-											formatEther(readCalculatePositionRatio)
-										);
-										if (isNaN(value))
-											return `${readCalculatePositionRatio.toFixed(2)}%`;
-										if (value > 99999) return "99999%+";
-										return `${value.toFixed(2)}%`;
-								  })()
+									const value = Number(
+										formatEther(readCalculatePositionRatio)
+									) * 100;
+									if (isNaN(value))
+										return `${readCalculatePositionRatio.toFixed(2)}%`;
+									if (value > 99999) return "99999%+";
+									return `${value.toFixed(2)}%`;
+								})()
 								: 0}
 						</h1>
-						{Number(formatEther(readCalculatePositionRatio || 0)) < 150 && (
+						{Number(formatEther(readCalculatePositionRatio || 0)) * 100 < 150 && (
 							<p className='text-red-600 font-bold'>Liquidatable</p>
 						)}
 					</div>
@@ -1274,6 +1300,8 @@ export default function Index() {
 						refetchEthBalance={refetchEthBalance}
 						readCalculatePositionRatio={readCalculatePositionRatio}
 						refetchCalculatePositionRatio={refetchCalculatePositionRatio}
+						key={key}
+						refetchAllIndex={refetchAllIndex}
 					/>
 				</div>
 				<div className='bg-white w-full min-h-[200px] p-4 rounded-[10px] border-[0.5px] shadow-md border-gray-200'>

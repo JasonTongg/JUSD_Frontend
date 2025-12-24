@@ -141,6 +141,7 @@ export function CollateralHistory({
 	refetchJusdBalance,
 	refetchEthBalance,
 	refetchCalculatePositionRatio,
+	refetchAllIndex
 }) {
 	const { abi } = useSelector((data) => data.data);
 	const client = usePublicClient();
@@ -313,6 +314,7 @@ export function CollateralHistory({
 							positionEventCount={positionEventsLength}
 							refetchAllPositions={refetchPositions}
 							refetchCalculatePositionRatio={refetchCalculatePositionRatio}
+							refetchAllIndex={refetchAllIndex}
 						/>
 					))}
 		</div>
