@@ -49,6 +49,8 @@ export default function Index() {
 	const { isConnected, address } = useAccount();
 	const { data: userBalance, refetch: refetchEthBalance } = useBalance({
 		address,
+		watch: true,
+		staleTime: 0,
 	});
 	const { abi } = useSelector((data) => data.data);
 	const [newBorrowRate, setNewBorrowRate] = useState(0);
