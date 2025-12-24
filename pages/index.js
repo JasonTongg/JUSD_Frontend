@@ -27,6 +27,7 @@ import Modal from "@mui/material/Modal";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoMdRemoveCircle } from "react-icons/io";
 import { FaPercentage } from "react-icons/fa";
+import { usePublicClient } from "wagmi";
 
 const style = {
 	position: "absolute",
@@ -43,6 +44,7 @@ const style = {
 };
 
 export default function Index() {
+	const publicClient = usePublicClient();
 	const dispatch = useDispatch();
 	const { isConnected, address } = useAccount();
 	const { data: userBalance, refetch: refetchEthBalance } = useBalance({
@@ -357,12 +359,14 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeBorrowRate({
+			const hash = await writeBorrowRate({
 				address: process.env.NEXT_PUBLIC_RATE_CONTROLLER_ADDRESS,
 				abi: abi.ratecontroller,
 				functionName: "setBorrowRate",
 				args: [newBorrowRate],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash });
 
 			toast.success("Transaction Success...");
 		} catch (e) {
@@ -373,6 +377,7 @@ export default function Index() {
 
 		refetchBorrowRate();
 		refetchEthBalance();
+		setNewBorrowRate(0);
 	};
 
 	const handleSavingsRate = async () => {
@@ -380,12 +385,14 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeSavingsRate({
+			const hash = await writeSavingsRate({
 				address: process.env.NEXT_PUBLIC_RATE_CONTROLLER_ADDRESS,
 				abi: abi.ratecontroller,
 				functionName: "setSavingsRate",
 				args: [newSavingsRate],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash });
 
 			toast.success("Transaction Success...");
 		} catch (e) {
@@ -396,6 +403,7 @@ export default function Index() {
 
 		refetchSavingsRate();
 		refetchEthBalance();
+		setNewSavingsRate(0);
 	};
 
 	const handleSwap = async (type) => {
@@ -404,13 +412,15 @@ export default function Index() {
 		if (type === "ethToToken") {
 			try {
 				toast.info("Submitting Transaction...");
-				await writeSwap({
+				const hash = await writeSwap({
 					address: process.env.NEXT_PUBLIC_DEX_ADDRESS,
 					abi: abi.dex,
 					functionName: "swap",
-					args: [BigInt(parseEther(inputEth))],
+					args: [parseEther(inputEth)],
 					value: parseEther(inputEth),
 				});
+
+				await publicClient.waitForTransactionReceipt({ hash });
 
 				toast.success("Transaction Success...");
 			} catch (e) {
@@ -421,22 +431,27 @@ export default function Index() {
 		} else {
 			try {
 				toast.info("Submitting Transaction...");
-				await writeApprove({
+				const hash = await writeApprove({
 					address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
 					abi: abi.myusd,
 					functionName: "approve",
 					args: [
 						process.env.NEXT_PUBLIC_DEX_ADDRESS,
-						BigInt(parseEther(inputMyUsd)),
+						parseEther(String(inputMyUsd)),
 					],
 				});
 
-				await writeSwap({
+				await publicClient.waitForTransactionReceipt({ hash });
+
+				const hash2 = await writeSwap({
 					address: process.env.NEXT_PUBLIC_DEX_ADDRESS,
 					abi: abi.dex,
 					functionName: "swap",
-					args: [BigInt(parseEther(inputMyUsd))],
+					args: [parseEther(String(inputMyUsd))],
 				});
+
+				//error cant convert undefined to bigint when add this line
+				await publicClient.waitForTransactionReceipt({ hash: hash2 });
 
 				toast.success("Transaction Success...");
 			} catch (e) {
@@ -450,6 +465,8 @@ export default function Index() {
 		refetchEthBalance();
 		refetchCalculatePositionRatio();
 		setKey((k) => k + 1);
+		setInputMyUsd(0);
+		setInputEth(0);
 	};
 
 	const handleAddCollateral = async () => {
@@ -457,12 +474,14 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeAddCollateral({
+			const hash2 = await writeAddCollateral({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: abi.myusdengine,
 				functionName: "addCollateral",
 				value: parseEther(addCollateralAmount),
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
 
 			toast.success("Transaction Success...");
 		} catch (e) {
@@ -477,6 +496,7 @@ export default function Index() {
 		refetchUserDebtShares();
 		refetchEthBalance();
 		setKey((k) => k + 1);
+		setAddCollateralAmount(0);
 	};
 
 	const handleRemoveCollateral = async () => {
@@ -484,12 +504,14 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeRemoveCollateral({
+			const hash2 = await writeRemoveCollateral({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: abi.myusdengine,
 				functionName: "withdrawCollateral",
 				args: [BigInt(parseEther(removeCollateralAmount))],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
 
 			toast.success("Transaction Success...");
 		} catch (e) {
@@ -504,6 +526,7 @@ export default function Index() {
 		refetchUserDebtShares();
 		refetchEthBalance();
 		setKey((k) => k + 1);
+		setRemoveCollateralAmount(0);
 	};
 
 	const handleMintMyUsd = async () => {
@@ -511,12 +534,14 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeMintMyUsd({
+			const hash2 = await writeMintMyUsd({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: abi.myusdengine,
 				functionName: "mintMyUSD",
 				args: [BigInt(parseEther(mintAmount))],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
 			toast.success("Transaction Success...");
 		} catch (e) {
 			toast.error(
@@ -529,6 +554,7 @@ export default function Index() {
 		refetchUserDebtShares();
 		refetchEthBalance();
 		setKey((k) => k + 1);
+		setMintAmount(0);
 	};
 
 	const handleRepay = async () => {
@@ -538,19 +564,23 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeApprove({
+			const hash2 = await writeApprove({
 				address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
 				abi: abi.myusd,
 				functionName: "approve",
 				args: [process.env.NEXT_PUBLIC_ENGINE_ADDRESS, repayWei],
 			});
 
-			await writeRepay({
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
+
+			const hash = await writeRepay({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: abi.myusdengine,
 				functionName: "repayUpTo",
 				args: [repayWei],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash });
 			toast.success("Transaction Success...");
 		} catch (e) {
 			toast.error(
@@ -563,6 +593,7 @@ export default function Index() {
 		refetchUserDebtShares();
 		refetchEthBalance();
 		setKey((k) => k + 1);
+		setRepayAmount(0);
 	};
 
 	const handleStake = async () => {
@@ -572,19 +603,23 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeApprove({
+			const hash2 = await writeApprove({
 				address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
 				abi: abi.myusd,
 				functionName: "approve",
 				args: [process.env.NEXT_PUBLIC_STAKING_ADDRESS, stakeWei],
 			});
 
-			await writeStake({
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
+
+			const hash = await writeStake({
 				address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
 				abi: abi.myusdstaking,
 				functionName: "stake",
 				args: [stakeWei],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash });
 			toast.success("Transaction Success...");
 		} catch (e) {
 			toast.error(
@@ -601,6 +636,7 @@ export default function Index() {
 		refetchTotalSharesValue();
 		refetchEthBalance();
 		setKey((k) => k + 1);
+		setStakeAmount(0);
 	};
 
 	const handleWithdraw = async () => {
@@ -608,11 +644,13 @@ export default function Index() {
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeWithdraw({
+			const hash2 = await writeWithdraw({
 				address: process.env.NEXT_PUBLIC_STAKING_ADDRESS,
 				abi: abi.myusdstaking,
 				functionName: "withdraw",
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
 			toast.success("Transaction Success...");
 		} catch (e) {
 			toast.error(
@@ -698,7 +736,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleBorrowRate();
-									setNewBorrowRate(0);
 								}}
 								className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'
 							>
@@ -724,7 +761,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleSavingsRate();
-									setNewSavingsRate(0);
 								}}
 								className='text-gray-600 bg-gray-200 py-1 px-3 rounded-[10px] text-sm'
 							>
@@ -767,7 +803,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleSwap("ethToToken");
-									setInputEth(0);
 								}}
 								className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'
 							>
@@ -793,7 +828,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleSwap("tokenToEth");
-									setInputMyUsd(0);
 								}}
 								className='text-purple-600 bg-purple-200 py-1 px-3 rounded-[10px] text-sm'
 							>
@@ -870,7 +904,6 @@ export default function Index() {
 								onClick={() => {
 									handleAddCollateral();
 									refetchCalculatePositionRatio();
-									setAddCollateralAmount(0);
 								}}
 								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm'
 							>
@@ -905,7 +938,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleRemoveCollateral();
-									setRemoveCollateralAmount(0);
 									refetchCalculatePositionRatio();
 								}}
 								className='text-blue-600 bg-blue-200 py-1 px-3 rounded-[10px] text-sm disabled:opacity-20'
@@ -946,7 +978,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleStake();
-									setStakeAmount(0);
 								}}
 								className='text-orange-600 bg-orange-200 py-1 px-3 rounded-[10px] text-sm'
 							>
@@ -1047,7 +1078,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleMintMyUsd();
-									setMintAmount(0);
 									refetchCalculatePositionRatio();
 								}}
 								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm disabled:opacity-20'
@@ -1083,7 +1113,6 @@ export default function Index() {
 							<button
 								onClick={() => {
 									handleRepay();
-									setRepayAmount(0);
 									refetchCalculatePositionRatio();
 								}}
 								className='text-green-600 bg-green-200 py-1 px-3 rounded-[10px] text-sm'

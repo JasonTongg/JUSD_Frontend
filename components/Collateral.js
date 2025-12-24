@@ -49,7 +49,7 @@ export function Collateral({
 	refetchAllIndex
 }) {
 	const { abi } = useSelector((data) => data.data);
-	const client = usePublicClient();
+	const publicClient = usePublicClient();
 	const [addCollateral, setAddCollateral] = useState([]);
 	const { isConnected } = useAccount();
 
@@ -132,19 +132,23 @@ export function Collateral({
 
 		try {
 			toast.info("Submitting Transaction...");
-			await writeApprove({
+			const hash2 = await writeApprove({
 				address: process.env.NEXT_PUBLIC_STABLECOIN_ADDRESS,
 				abi: abi.myusd,
 				functionName: "approve",
 				args: [process.env.NEXT_PUBLIC_ENGINE_ADDRESS, readUserDebt],
 			});
 
-			await writeLiquidate({
+			await publicClient.waitForTransactionReceipt({ hash: hash2 });
+
+			const hash = await writeLiquidate({
 				address: process.env.NEXT_PUBLIC_ENGINE_ADDRESS,
 				abi: abi.myusdengine,
 				functionName: "liquidate",
 				args: [address],
 			});
+
+			await publicClient.waitForTransactionReceipt({ hash });
 			toast.success("Transaction Success...");
 		} catch (e) {
 			toast.error(

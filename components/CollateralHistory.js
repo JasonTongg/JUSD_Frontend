@@ -262,9 +262,6 @@ export function CollateralHistory({
 			const rawUserDebt = readData[debtIndex]?.result;
 			const isLiquidatable = readData[liquidatableIndex]?.result;
 
-			console.log("read data");
-			console.log(readData);
-
 			let currentDebtAmount = 0;
 			if (rawUserDebt) {
 				currentDebtAmount = Number(formatEther(rawUserDebt));
@@ -286,8 +283,6 @@ export function CollateralHistory({
 			return b.debt - a.debt;
 		});
 
-		console.log("position");
-		console.log(calculatedPositions);
 		return calculatedPositions.map((position) => position.user);
 	}, [readData, uniqueAddresses]);
 
